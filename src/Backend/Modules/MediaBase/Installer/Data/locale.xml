@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale>
+	<Backend>
+		<MediaBase>
+			
+		</MediaBase>
+		<Core>
+			<item type="label" name="MediaBase">
+				<translation language="nl"><![CDATA[Media base]]></translation>
+				<translation language="en"><![CDATA[Media base]]></translation>
+			</item>
+		</Core>
+	</Backend>
+	<Frontend>
+		<core>
+		</core>
+	</Frontend>
+</locale>
