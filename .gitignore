@@ -14,37 +14,7 @@
 /js/
 /css/
 
-!/.gitignore
-
-/*
 
 
-
-!/README.MD
-!/src/
-/src/*
-
-!/src/Frontend/
-/src/Frontend/*
-!/src/Frontend/Modules/
-/src/Frontend/Modules/*
-
-!/src/Backend/
-/src/Backend/*
-!/src/Backend/Modules/
-/src/Backend/Modules/*
-
-!/src/Frontend/Modules/Media/
-!/src/Frontend/Modules/Media/*
-
-!/src/Backend/Modules/Media/
-!/src/Backend/Modules/Media/*
-
-!/src/Frontend/Modules/MediaBase/
-!/src/Frontend/Modules/MediaBase/*
-
-!/laravel/
-/laravel/*
-
-!/laravel/database/*
-
+.htaccess
+._ignore/*
