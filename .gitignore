@@ -14,9 +14,11 @@
 /js/
 /css/
 
+!/.gitignore
+
 /*
 
-!/.gitignore
+
 
 !/README.MD
 !/src/
