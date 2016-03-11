@@ -15,6 +15,9 @@
 /css/
 
 /*
+
+!/.gitignore
+
 !/README.MD
 !/src/
 /src/*
@@ -28,7 +31,6 @@
 /src/Backend/*
 !/src/Backend/Modules/
 /src/Backend/Modules/*
-
 
 !/src/Frontend/Modules/Media/
 !/src/Frontend/Modules/Media/*
@@ -44,4 +46,3 @@
 
 !/laravel/database/*
 
-!/.gitignore
