@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<locale>
+	<Backend>
+		<Media>
+			<item type="label" name="Media">
+				<translation language="nl"><![CDATA[media]]></translation>
+				<translation language="en"><![CDATA[media]]></translation>
+			</item>
+			<item type="label" name="Library">
+				<translation language="nl"><![CDATA[bibliotheek]]></translation>
+				<translation language="en"><![CDATA[library]]></translation>
+			</item>
+		</Media>
+		<Core>
+			<item type="label" name="Media">
+				<translation language="nl"><![CDATA[media]]></translation>
+				<translation language="en"><![CDATA[media]]></translation>
+			</item>
+		</Core>
+	</Backend>
+	<Frontend>
+		<Core>
+		</Core>
+	</Frontend>
+</locale>
