@@ -34,9 +34,11 @@ class Installer extends ModuleInstaller
         $this->setActionRights(1, 'Media', 'Delete');
         $this->setActionRights(1, 'Media', 'Settings');
         $this->setActionRights(1, 'Media', 'Widgets');
-        $this->setActionRights(1, 'Media', 'EditWidget');
-        $this->setActionRights(1, 'Media', 'AddWidget');
-        $this->setActionRights(1, 'Media', 'DeleteWidget');
+        $this->setActionRights(1, 'Media', 'EditAlbum');
+        $this->setActionRights(1, 'Media', 'AddAlbum');
+        $this->setActionRights(1, 'Media', 'DeleteAlbum');
+        $this->setActionRights(1, 'Media', 'MoveFolder');
+        $this->setActionRights(1, 'Media', 'RenameFolder');
 
         $navigationModulesId = $this->setNavigation(null, 'Modules');
         $navigationModulesId = $this->setNavigation($navigationModulesId, 'Media', 'media/index');

@@ -12,15 +12,22 @@
     </div>
 </div>
 
-{option:dataGrid}
-    <div class="dataGridHolder">
-        {$dataGrid}
-    </div>
-{/option:dataGrid}
+<table>
+    <tbody>
+        <tr>
+            <td id="pagesTree">
+                <div class="js-tree">
+                    {$tree}
+                </div>
+            </td>
+            <td  id="contentHolder">
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
 
-{option:!dataGrid}
-    {$msgNoItems}
-{/option:!dataGrid}
+
 
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/StructureEndModule.tpl}
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/Footer.tpl}

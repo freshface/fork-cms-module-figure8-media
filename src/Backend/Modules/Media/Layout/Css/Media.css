@@ -1,0 +1,8 @@
+.js-tree {
+	overflow: hidden;
+	width: 239px;
+	border: 1px solid #DDD;
+	padding: 10px;
+	background: #FFF;
+	border-radius: 4px;
+}

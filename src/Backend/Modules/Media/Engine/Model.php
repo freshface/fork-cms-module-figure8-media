@@ -4,6 +4,7 @@ namespace Backend\Modules\Media\Engine;
 
 use Backend\Core\Engine\Model as BackendModel;
 use Backend\Core\Engine\Language;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * In this file we store all generic functions that we will be using in the Media module
@@ -12,11 +13,123 @@ use Backend\Core\Engine\Language;
  */
 class Model
 {
-    const QRY_DATAGRID_BROWSE =
-        'SELECT i.id, c.name, i.website
-         FROM media AS i
-         INNER JOIN shop_product_content as c  on i.id = c.brand_id
-         WHERE c.language = ?';
+
+    public static function moveFolder($id, $droppedOn)
+    {
+        BackendModel::get('database')->update(
+            'media_folders', array('parent_id' => $droppedOn), 'id = ?', (int) $id
+        );
+
+        return true;
+    }
+
+    public static function renameFolder($id, $name)
+    {
+        BackendModel::get('database')->update(
+            'media_folders', array('name' => $name), 'id = ?', (int) $id
+        );
+
+        return true;
+    }
+
+     public static function createFolder($parent_id, $name)
+    {
+         return (int) BackendModel::get('database')->insert('media_folders', array('parent_id' => (int )$parent_id, 'name' => $name));
+    }
+
+    public static function folderArrayToFlatArray()
+    {
+       $array = self::getFolderArray();
+       $return = array();
+
+       foreach($array as $item){
+       
+            $return[$item['id']] = $item['parent_id'];
+            $return[$item['id']] = array('name' => $item['name'], 'parent_id' => $item['parent_id'], 'id' => $item['id']);
+       }
+
+        return $return;
+    }
+
+    public static function deleteFolderTreeHTMLCache()
+    {
+        $fs = new Filesystem();
+        $fs->remove(BACKEND_CACHE_PATH . '/Media/tree.tpl');
+    }
+
+
+    public static function getFolderTreeHTML()
+    { 
+         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree.tpl')) {
+
+            $value = self::folderArrayTreeToList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
+            $fs = new Filesystem();
+            $fs->dumpFile(
+                BACKEND_CACHE_PATH . '/Media/tree.tpl',
+                $value
+            );
+        }
+
+        return file_get_contents(BACKEND_CACHE_PATH . '/Media/tree.tpl');
+    }
+
+
+    public static function folderArrayTreeToList($tree)
+    {       
+        $return = '<ul>';
+
+        foreach($tree as $node) {
+            $return .= '<li>';
+            $return .= '<a href="#" id="folder-' . $node['id'] . '" data-id="' . $node['id'] .'">';
+            $return .= $node['name'];
+             $return .= '</a>';
+                if(isset($node['children'])) $return .= self::folderArrayTreeToList($node['children']);
+            $return .= '</li>';
+        }
+
+        $return .= '</ul>';
+        
+        return $return;
+    }
+
+    public static function flatFolderArrayToArrayTree($array)
+    {
+        $flat = array();
+        $tree = array();
+
+        foreach ($array as $child => $parent) {
+            if (!isset($flat[$child])) {
+                $flat[$child] = array('name' => $parent['name'], 'id' => $parent['id']);
+            }
+            if (!empty($parent['parent_id'])) {
+                $flat[$parent['parent_id']]['children'][$child] =& $flat[$child];
+            } else {
+                $tree[$child] =& $flat[$child];
+            }
+        }
+
+        return $tree;
+    }
+
+    public static function getFolderArray($parent = 0, $return = array())
+    {
+        $result = (array) BackendModel::get('database')->getRecords(
+            'SELECT i.name, i.parent_id, i.id
+             FROM media_folders AS i
+             WHERE i.parent_id = ? ORDER BY i.name',
+            array((int) $parent), 'id'
+        );
+
+        foreach($result as $row){
+            $return[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'], 'name' => $row['name']);
+            $return = self::getFolderArray($row['id'], $return);
+        }
+        
+        return $return;
+    }
+
+
+ 
 
     /**
      * Delete a certain item

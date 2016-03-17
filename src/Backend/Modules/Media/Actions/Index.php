@@ -29,8 +29,17 @@ class Index extends ActionIndex
         // add css
         $this->header->addCSS('/src/Backend/Modules/Media/Js/jstree/themes/default/style.css', null, true);
 
+        $this->getData();
+
         $this->parse();
         $this->display();
+    }
+    /**
+     * Get the data
+     */
+    protected function getData()
+    {
+        $this->tree = BackendMediaModel::getFolderTreeHTML();
     }
 
 
@@ -39,5 +48,6 @@ class Index extends ActionIndex
      */
     protected function parse()
     {
+        $this->tpl->assign("tree", $this->tree);
     }
 }
