@@ -18,7 +18,7 @@ class MoveFolder extends BackendBaseAJAXAction
 
         // get parameters
         $id = \SpoonFilter::getPostValue('id', null, 0, 'int');
-        $droppedOn = \SpoonFilter::getPostValue('dropped_on', null, 0, 'int');
+        $dropped_on = \SpoonFilter::getPostValue('dropped_on', null, 0, 'int');
 
         // init validation
         $errors = array();
@@ -32,8 +32,13 @@ class MoveFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            // get page
-            $success = BackendMediaModel::moveFolder($id, $droppedOn);
+            
+             $data = array(
+                'id' => $id,
+                'dropped_on' => $dropped_on
+            );
+
+            $success = BackendMediaModel::moveFolder($data);
 
             // build cache
             BackendMediaModel::deleteFolderTreeHTMLCache();

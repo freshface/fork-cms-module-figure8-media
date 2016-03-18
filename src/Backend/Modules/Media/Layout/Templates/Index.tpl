@@ -6,7 +6,7 @@
         {$lblMedia|ucfirst}
     </h2>
     <div class="buttonHolderRight">
-        <a href="{$var|geturl:'add'}" class="button icon iconAdd" title="{$lblAddMedia|ucfirst}">
+        <a href="{$var|geturl:'add'}{option:folder}&amp;folder_id={$folder.id}{/option:folder}" class="button icon iconAdd" title="{$lblAddMedia|ucfirst}">
             <span>{$lblAddMedia|ucfirst}</span>
         </a>
     </div>

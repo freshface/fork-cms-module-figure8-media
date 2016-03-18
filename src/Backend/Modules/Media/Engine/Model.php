@@ -14,27 +14,35 @@ use Symfony\Component\Filesystem\Filesystem;
 class Model
 {
 
-    public static function moveFolder($id, $droppedOn)
+     public static function getFolderMaximumSequence()
+    {
+        return (int) BackendModel::get('database')->getVar(
+            'SELECT MAX(i.sequence)
+             FROM media_folders AS i'
+        );
+    }
+
+    public static function moveFolder($data)
     {
         BackendModel::get('database')->update(
-            'media_folders', array('parent_id' => $droppedOn), 'id = ?', (int) $id
+            'media_folders', array('parent_id' => $data['dropped_on']), 'id = ?', (int) $data['id']
         );
 
         return true;
     }
 
-    public static function renameFolder($id, $name)
+    public static function renameFolder($data)
     {
         BackendModel::get('database')->update(
-            'media_folders', array('name' => $name), 'id = ?', (int) $id
+            'media_folders', array('name' => $data['name']), 'id = ?', (int) $data['id']
         );
 
         return true;
     }
 
-     public static function createFolder($parent_id, $name)
+     public static function createFolder($data)
     {
-         return (int) BackendModel::get('database')->insert('media_folders', array('parent_id' => (int )$parent_id, 'name' => $name));
+         return (int) BackendModel::get('database')->insert('media_folders', array($data));
     }
 
     public static function folderArrayToFlatArray()
@@ -54,23 +62,23 @@ class Model
     public static function deleteFolderTreeHTMLCache()
     {
         $fs = new Filesystem();
-        $fs->remove(BACKEND_CACHE_PATH . '/Media/tree.tpl');
+        $fs->remove(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
     }
 
 
     public static function getFolderTreeHTML()
     { 
-         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree.tpl')) {
+         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl')) {
 
             $value = self::folderArrayTreeToList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
             $fs = new Filesystem();
             $fs->dumpFile(
-                BACKEND_CACHE_PATH . '/Media/tree.tpl',
+                BACKEND_CACHE_PATH . '/Media/tree-ul.tpl',
                 $value
             );
         }
 
-        return file_get_contents(BACKEND_CACHE_PATH . '/Media/tree.tpl');
+        return file_get_contents(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
     }
 
 
@@ -80,7 +88,7 @@ class Model
 
         foreach($tree as $node) {
             $return .= '<li>';
-            $return .= '<a href="#" id="folder-' . $node['id'] . '" data-id="' . $node['id'] .'">';
+            $return .= '<a  href="#" data-id="' . $node['id'] .'">';
             $return .= $node['name'];
              $return .= '</a>';
                 if(isset($node['children'])) $return .= self::folderArrayTreeToList($node['children']);
@@ -116,7 +124,7 @@ class Model
         $result = (array) BackendModel::get('database')->getRecords(
             'SELECT i.name, i.parent_id, i.id
              FROM media_folders AS i
-             WHERE i.parent_id = ? ORDER BY i.name',
+             WHERE i.parent_id = ? ORDER BY i.sequence',
             array((int) $parent), 'id'
         );
 
@@ -129,104 +137,32 @@ class Model
     }
 
 
- 
-
-    /**
-     * Delete a certain item
-     *
-     * @param int $id
-     */
-    public static function delete($id)
-    {
-        BackendModel::get('database')->delete('media', 'id = ?', (int) $id);
-        BackendModel::get('database')->delete('shop_product_content', 'brand_id = ?', (int) $id);
-        BackendModel::get('database')->update('media', array('brand_id' => NULL), 'brand_id = ?', array($id));
-    }
-
-    /**
-     * Checks if a certain item exists
-     *
-     * @param int $id
-     * @return bool
-     */
-    public static function exists($id)
-    {
-        return (bool) BackendModel::get('database')->getVar(
-            'SELECT 1
-             FROM media AS i
-             WHERE i.id = ?
-             LIMIT 1',
-            array((int) $id)
-        );
-    }
-
-    /**
-     * Fetches a certain item
-     *
-     * @param int $id
-     * @return array
-     */
-    public static function get($id)
+    public static function getFolder($id)
     {
         $db = BackendModel::get('database');
 
         $return =  (array) $db->getRecord(
             'SELECT i.*
-             FROM media AS i
+             FROM media_folders AS i
              WHERE i.id = ?',
             array((int) $id)
         );
 
-        // data found
-        $return['content'] = (array) $db->getRecords(
-            'SELECT i.* FROM shop_product_content AS i
-            WHERE i.brand_id = ?',
-            array((int) $id), 'language');
+        return  $return;
+    }
+
+    public static function getLibraryForFolder($id)
+    {
+        $db = BackendModel::get('database');
+
+        $return =  (array) $db->getRecord(
+            'SELECT i.*
+             FROM media_library AS i
+             WHERE i.folder_id = ?',
+            array((int) $id)
+        );
 
         return  $return;
 
-    }
-
-
-    /**
-     * Insert an item in the database
-     *
-     * @param array $item
-     * @return int
-     */
-    public static function insert(array $item)
-    {
-        $item['created_on'] = BackendModel::getUTCDate();
-        $item['edited_on'] = BackendModel::getUTCDate();
-
-        return (int) BackendModel::get('database')->insert('media', $item);
-    }
-
-    public static function insertContent(array $content)
-    {
-        BackendModel::get('database')->insert('shop_product_content', $content);
-    }
-
-    /**
-     * Updates an item
-     *
-     * @param array $item
-     */
-    public static function update(array $item)
-    {
-        $item['edited_on'] = BackendModel::getUTCDate();
-
-        BackendModel::get('database')->update(
-            'media', $item, 'id = ?', (int) $item['id']
-        );
-    }
-
-    public static function updateContent(array $content, $id)
-    {
-        $db = BackendModel::get('database');
-        foreach($content as $language => $row)
-        {
-            $db->update('shop_product_content', $row, 'brand_id = ? AND language = ?', array($id, $language));
-        }
     }
 }

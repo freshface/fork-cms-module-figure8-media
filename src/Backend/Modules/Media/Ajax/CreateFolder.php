@@ -36,8 +36,15 @@ class CreateFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            // get page
-            $success = BackendMediaModel::createFolder($parent_id, $name);
+            
+            $data = array(
+                'parent_id' => $parent_id,
+                'name' => $name,
+                'sequence' => BackendMediaModel::getFolderMaximumSequence() + 1
+            );
+
+
+            $success = BackendMediaModel::createFolder($data);
 
             // build cache
             BackendMediaModel::deleteFolderTreeHTMLCache();

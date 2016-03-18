@@ -36,8 +36,13 @@ class RenameFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            // get page
-            $success = BackendMediaModel::renameFolder($id, $name);
+            
+             $data = array(
+                'id' => $id,
+                'name' => $name
+            );
+
+            $success = BackendMediaModel::renameFolder($data);
 
             // build cache
             BackendMediaModel::deleteFolderTreeHTMLCache();

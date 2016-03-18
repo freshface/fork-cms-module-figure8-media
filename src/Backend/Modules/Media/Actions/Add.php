@@ -2,7 +2,7 @@
 
 namespace Backend\Modules\Media\Actions;
 
-use Backend\Core\Engine\Base\ActionIndex;
+use Backend\Core\Engine\Base\ActionAdd as BackendBaseActionAdd;
 use Backend\Core\Engine\Authentication;
 use Backend\Core\Engine\Language;
 use Backend\Core\Engine\Model;
@@ -13,7 +13,7 @@ use Backend\Modules\Media\Engine\Model as BackendMediaModel;
  *
  * @author Frederik Heyninck <frederik@figure8.be>
  */
-class Index extends ActionIndex
+class Add extends BackendBaseActionAdd
 {
     /**
      * Execute the action
@@ -23,11 +23,12 @@ class Index extends ActionIndex
         parent::execute();
 
         // add js
-        $this->header->addJS('jstree/jstree.min.js', null, false);
-        $this->header->addJS('MediaInit.js', null, true);
+        $this->header->addJS('jquery.uploadifive.js');
+        $this->header->addJS('MediaInit.js', null, false);
 
         // add css
-        $this->header->addCSS('/src/Backend/Modules/Media/Js/jstree/themes/default/style.css', null, true);
+        $this->header->addCSS('uploadifive.css');
+
 
         $this->getData();
 
@@ -55,5 +56,10 @@ class Index extends ActionIndex
         $this->tpl->assign("folder", $this->folder);
         $this->tpl->assign("tree", $this->tree);
         $this->header->addJSData('media','folder_id', $this->folder_id);
+
+        $timestamp = time();
+        $this->tpl->assign('timestamp', $timestamp);
+        $this->tpl->assign('token', md5($timestamp));
+        
     }
 }
