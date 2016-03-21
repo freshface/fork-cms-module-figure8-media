@@ -14,7 +14,41 @@ use Symfony\Component\Filesystem\Filesystem;
 class Model
 {
 
-     public static function getFolderMaximumSequence()
+    public static function getAllAllowedFileTypes()
+    {
+        return (array) BackendModel::get('database')->getRecords(
+            'SELECT i.*
+             FROM media_allowed_file_types AS i'
+        );
+    }
+
+    public static function getAllAllowedFileMimetypes()
+    {
+        return (array) BackendModel::get('database')->getColumn(
+            'SELECT i.mimetype
+             FROM media_allowed_file_types AS i WHERE i.mimetype IS NOT NULL'
+        );
+    }
+
+    public static function getAllAllowedTypeByMimetype($mimetype)
+    {
+        return (string) BackendModel::get('database')->getVar(
+            'SELECT i.type
+             FROM media_allowed_file_types AS i WHERE i.mimetype = ?', array($mimetype)
+        );
+    }
+
+    public static function getAllAllowedFileTypesForJavascript()
+    {
+        $types = (array) BackendModel::get('database')->getColumn(
+            'SELECT i.mimetype
+             FROM media_allowed_file_types AS i WHERE i.mimetype IS NOT NULL'
+        );
+
+        return implode(',', $types);
+    }
+
+    public static function getFolderMaximumSequence()
     {
         return (int) BackendModel::get('database')->getVar(
             'SELECT MAX(i.sequence)
@@ -40,7 +74,12 @@ class Model
         return true;
     }
 
-     public static function createFolder($data)
+    public static function insertFile($data)
+    {
+         return (int) BackendModel::get('database')->insert('media_library', array($data));
+    }
+
+    public static function createFolder($data)
     {
          return (int) BackendModel::get('database')->insert('media_folders', array($data));
     }
@@ -164,5 +203,48 @@ class Model
 
         return  $return;
 
+    }
+
+    public static function getFilename($filename, $id = null)
+    {
+        $filename = (string) $filename;
+
+       $path_parts = pathinfo($filename);
+
+        // get db
+        $db = BackendModel::getContainer()->get('database');
+
+        // new item
+        if ($id === null) {
+            // already exists
+            if ((bool) $db->getVar(
+                'SELECT 1
+                 FROM media_library AS i
+                 WHERE i.filename  = ?
+                 LIMIT 1',
+                array($filename)
+            )
+            ) {
+                $filename = BackendModel::addNumber($path_parts['filename']) . '.' . $path_parts['extension'];
+
+                return self::getFilename($filename);
+            }
+        } else {
+            // current category should be excluded
+            if ((bool) $db->getVar(
+                'SELECT 1
+                 FROM media_library AS i
+                 WHERE i.filename = ? AND i.id != ?
+                 LIMIT 1',
+                array( $filename, $id)
+            )
+            ) {
+                $filename = BackendModel::addNumber($path_parts['filename']) . '.' . $path_parts['extension'];
+
+                return self::getFilename($filename, $id);
+            }
+        }
+
+        return $filename;
     }
 }

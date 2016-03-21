@@ -12,73 +12,77 @@
  */
 jsBackend.media =
 {
-    // constructor
-    init: function()
-    {
-    	jsBackend.media.tree.init();
-    	jsBackend.media.uploader.init();
-    }
+	// constructor
+	init: function()
+	{
+		jsBackend.media.tree.init();
+		jsBackend.media.uploader.init();
+	}
 }
 
 jsBackend.media.uploader =
 {
-    // constructor
-    init: function()
-    {
-    	$('#images').uploadifive({
-				'auto'             : false,
-				'formData'         : {
-										'simUploadLimit' : 3,
-									   'timestamp' : uploadTimestamp,
-									   'token'     : uploadToken,
-									   'fork[module]'     : 'Photogallery',
-									   'fork[action]'	: 'Upload',
-									   'fork[language]'	: jsBackend.current.language
-				                     },
-				'queueID'          : 'queue',
-				'uploadScript'     : '/backend/ajax',
-				'removeCompleted' : true,
-				'fileType'     : 'image',
-				'buttonClass': 'uploadifive-select-button',
-				'onQueueComplete' : function(file, data)
-				{ 
-					window.location = uploadSuccessURL
-				},
-				'onFallback'   : function() {
-					window.location = uploadFallbackURL
-       			 }
+	// constructor
+	init: function()
+	{
+		if($('#js-uploadify').length > 0)
+		{
+			$('#js-uploadify').uploadifive({
+					'auto'             	: false,
+					'debug'				: jsBackend.current.debug,
+					'formData'         	: {
+											'simUploadLimit' : 1,
+											'timestamp' : jsBackend.data.get('media.upload_timestamp'),
+											'token'     : jsBackend.data.get('media.upload_token'),
+											'folder_id'     : jsBackend.data.get('media.folder_id'),
+											'fork[module]'     : jsBackend.current.module,
+											'fork[action]'	: 'Upload',
+											'fork[language]'	: jsBackend.current.language
+										 },
+					'queueID'			: 'js-uploadify-queue',
+					'uploadScript' 		: '/backend/ajax',
+					'removeCompleted' 	: false,
+					'buttonClass'		: 'uploadifive-select-button',
+					'fileType'     		: jsBackend.data.get('media.allowed_file_types'),
+					'buttonText'		: jsBackend.locale.lbl('SelectFiles'),
+					'onQueueComplete' 	: function(file, data)
+					{ 
+						//window.location = jsBackend.data.get('media.upload_uploaded_success_url')
+					},
+					'onFallback'		: function() {
+						window.location = jsBackend.data.get('media.upload_uploaded_fallback_url')
+					 }
+				});
+
+
+			$('.js-upload-start').click(function(e){
+				e.preventDefault();
+				$('#js-uploadify').uploadifive('upload')
 			});
 
-
-		$('.js-upload-start').click(function(e){
-			e.preventDefault();
-			$('#images').uploadifive('upload')
-		});
-
-		$('.uploadifive-button').removeClass('uploadifive-button');
-
-
-    }
+			$('.uploadifive-button').removeClass('uploadifive-button');
+		}
+	}
 }
 
 jsBackend.media.tree =
 {
-    // constructor
-    init: function()
-    {
-    	if($('.js-tree').length > 0)
-    	{
+	// constructor
+	init: function()
+	{
+		if($('.js-tree').length > 0)
+		{
 
 
-	    	$('.js-tree a[data-id=' + jsBackend.data.get('media.folder_id') + ']').closest('li').attr('data-jstree', '{"opened":true,"selected":true}');
+			$('.js-tree a[data-id=' + jsBackend.data.get('media.folder_id') + ']').closest('li').attr('data-jstree', '{"opened":true,"selected":true}');
 
-	    	$('.js-tree').jstree({
+			$('.js-tree').jstree({
 				"core" : {
-			      "check_callback" : true
-			    },
-	    		"plugins" : [ "wholerow", "dnd", "contextmenu"],
-	    		contextmenu : {
-	    			items : function (o, cb) { // Could be an object directly
+				  "check_callback" : true
+				},
+				"plugins" : [ "wholerow", "dnd", "contextmenu"],
+				contextmenu : {
+					items : function (o, cb) { // Could be an object directly
 						return {
 							"create" : {
 								"separator_before"	: false,
@@ -94,9 +98,9 @@ jsBackend.media.tree =
 										inst.open_node(new_node.parent);	
 										
 										var parentId = $('#' + new_node.parent).find('a').first().data('id');
-								    	var name = 'New node';
+										var name = 'New node';
 
-								    	// make the call
+										// make the call
 										$.ajax(
 										{
 											data:
@@ -153,16 +157,16 @@ jsBackend.media.tree =
 							}
 						}
 					}
-	    		}
-	    	});
+				}
+			});
 
-	    	$(document).on('dnd_stop.vakata', function (data, element, helper, event) {
-	    		var id = $('#' + element.element.id).data('id');
-	    		var to = $(element.event.target).data('id');
+			$(document).on('dnd_stop.vakata', function (data, element, helper, event) {
+				var id = $('#' + element.element.id).data('id');
+				var to = $(element.event.target).data('id');
 
-	    	
-			    
-			    // make the call
+			
+				
+				// make the call
 				$.ajax(
 				{
 					data:
@@ -192,20 +196,20 @@ jsBackend.media.tree =
 
 			$(".js-tree").bind('select_node.jstree', function(node, selected, event) {
 			   
-			    var id = $('#' + selected.node.id).find('a').first().data('id');
-			    window.location = '?folder_id=' + id;
+				var id = $('#' + selected.node.id).find('a').first().data('id');
+				window.location = '?folder_id=' + id;
 
 			});
 
 			 
 			 $('.js-tree').on('rename_node.jstree', function (node, text, old) {
 
-			 	console.log($('#' + text.node.id).find('a').first())
-		    	var id = $('#' + text.node.id).find('a').first().data('id');
-		    	var name = text.text;
+				console.log($('#' + text.node.id).find('a').first())
+				var id = $('#' + text.node.id).find('a').first().data('id');
+				var name = text.text;
 
-		    	
-		    	// make the call
+				
+				// make the call
 				$.ajax(
 				{
 					data:
@@ -234,7 +238,7 @@ jsBackend.media.tree =
 
 			});
 
-	    }
+		}
 	}
 }
 

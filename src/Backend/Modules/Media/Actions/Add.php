@@ -44,6 +44,7 @@ class Add extends BackendBaseActionAdd
         $this->tree = BackendMediaModel::getFolderTreeHTML();
         $this->folder = BackendMediaModel::getFolder($this->folder_id);
         $this->library = BackendMediaModel::getLibraryForFolder($this->folder_id);
+        $this->allowed_file_types = BackendMediaModel::getAllAllowedFileTypesForJavascript();
     }
 
 
@@ -58,8 +59,12 @@ class Add extends BackendBaseActionAdd
         $this->header->addJSData('media','folder_id', $this->folder_id);
 
         $timestamp = time();
-        $this->tpl->assign('timestamp', $timestamp);
-        $this->tpl->assign('token', md5($timestamp));
-        
+
+        $this->header->addJSData('media','upload_timestamp', $timestamp);
+        $this->header->addJSData('media','upload_token', md5($timestamp));
+        $this->header->addJSData('media','allowed_file_types', $this->allowed_file_types);
+
+        $this->header->addJSData('media','upload_uploaded_success_url', '');
+        $this->header->addJSData('media','upload_uploaded_fallback_url', ''); // not supported page
     }
 }
