@@ -98,6 +98,7 @@ CREATE TABLE `media_library` (
   `created_on` datetime DEFAULT NULL,
   `edited_on` datetime DEFAULT NULL,
   `modified` enum('N','Y') DEFAULT NULL,
+  `extension` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `folder_id` (`folder_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;

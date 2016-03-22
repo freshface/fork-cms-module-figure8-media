@@ -46,11 +46,11 @@ class Installer extends ModuleInstaller
             $navigationModulesId,
             'Library',
             'media/index',
-            array('media/add','media/edit')
+            array('media/add','media/edit_file')
         );
 
         $this->setNavigation(
-            $navigationClassnameId,
+            $navigationModulesId,
             'Widgets',
             'media/widgets',
             array('media/add_widget', 'media/edit_widget')
@@ -66,7 +66,7 @@ class Installer extends ModuleInstaller
                 'media_folders',
                 array(
                     'id' => 1,
-                    'name' => 'Default',
+                    'name' => 'Root',
                     'count' => 0,
                     'parent_id' => 0
                 )

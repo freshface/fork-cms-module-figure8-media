@@ -81,6 +81,18 @@ class Upload extends BackendBaseAJAXAction
 				// Generate a unique filename
 				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
 
+				// path to folder
+				$files_path = FRONTEND_FILES_PATH . '/Media/files';
+				$preview_files_path = FRONTEND_FILES_PATH . '/Media/preview_files';
+				
+				$fs = new Filesystem();
+				$fs->mkdir($files_path, 0775);
+				$fs->mkdir($preview_files_path, 0775);
+
+				// Move the file
+				move_uploaded_file($temp_file, $files_path . '/' . $filename);
+				chmod($files_path . '/' . $filename, 0775);
+
 				$insert['filename'] = $filename;
 				$insert['original_filename'] = $filename;
 				$insert['folder_id'] = $this->folder_id;
@@ -88,18 +100,23 @@ class Upload extends BackendBaseAJAXAction
 				$insert['edited_on'] = BackendModel::getUTCDate();
 				$insert['modified'] = 'N';
 				$insert['type'] = BackendMediaModel::getAllAllowedTypeByMimetype($file_data['type']);
+				$insert['extension'] = $extension;
 
-				// path to folder
-				$setsFilesPath = FRONTEND_FILES_PATH . '/Media/files';
+				if($insert['type'] == 'image'){
+
+					$thumbnail = new \SpoonThumbnail($files_path . '/' . $filename , 400, 400, true);
+					$thumbnail->setAllowEnlargement(true);
+					$thumbnail->setForceOriginalAspectRatio(true);
+					$thumbnail->parseToFile($preview_files_path . '/' . $filename, 100);
+
+
+					list($width, $height) = getimagesize($files_path . '/' . $filename);
+
+					$data = array('portrait' => ($width > $height) ? false: true);
+					$insert['data'] = serialize($data);
+				}
 
 				$insert['id'] = BackendMediaModel::insertFile($insert);
-				
-				$fs = new Filesystem();
-				$fs->mkdir($setsFilesPath, 0775);
-
-				// Move the file
-				move_uploaded_file($temp_file, $setsFilesPath . '/' . $filename);
-				chmod($setsFilesPath . '/' . $filename, 0775);
 				
 			}
 			else

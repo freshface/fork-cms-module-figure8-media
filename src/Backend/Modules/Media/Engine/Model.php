@@ -5,6 +5,7 @@ namespace Backend\Modules\Media\Engine;
 use Backend\Core\Engine\Model as BackendModel;
 use Backend\Core\Engine\Language;
 use Symfony\Component\Filesystem\Filesystem;
+use Backend\Core\Engine\Language;
 
 /**
  * In this file we store all generic functions that we will be using in the Media module
@@ -13,6 +14,17 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class Model
 {
+
+    public static function getLanguages()
+    {
+        $languages = array();
+
+        foreach(Language::getActiveLanguages() as $abbreviation) {
+            $languages[] = array('abbreviation' => $abbreviation, 'label' => Language::getLabel(mb_strtoupper($abbreviation)));
+        }
+
+        return $languages;
+    }
 
     public static function getAllAllowedFileTypes()
     {
@@ -77,6 +89,13 @@ class Model
     public static function insertFile($data)
     {
          return (int) BackendModel::get('database')->insert('media_library', array($data));
+    }
+
+    public static function updateFile($data)
+    {
+           BackendModel::get('database')->update(
+                'media_library', array($data), 'id = ?', (int) $data['id']
+            );
     }
 
     public static function createFolder($data)
@@ -190,16 +209,42 @@ class Model
         return  $return;
     }
 
-    public static function getLibraryForFolder($id)
+     public static function getFile($id)
     {
         $db = BackendModel::get('database');
 
         $return =  (array) $db->getRecord(
             'SELECT i.*
              FROM media_library AS i
+             WHERE i.id = ?',
+            array((int) $id)
+        );
+
+        return  $return;
+    }
+
+    public static function getLibraryForFolder($id)
+    {
+        $db = BackendModel::get('database');
+
+        $return =  (array) $db->getRecords(
+            'SELECT i.*
+             FROM media_library AS i
              WHERE i.folder_id = ?',
             array((int) $id)
         );
+
+        $edit_url = BackendModel::createURLForAction('EditFile');
+        $files_path = FRONTEND_FILES_URL . '/Media/files';
+        $preview_files_path = FRONTEND_FILES_URL . '/Media/preview_files';
+
+        foreach ($return as &$record){
+            $record['data'] = @unserialize($record['data']);
+            $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
+            $record['is_' . $record['type']] = true;
+            $record['file_url'] = $files_path . '/' . $record['filename'];
+            $record['preview_file_url'] = $preview_files_path . '/' . $record['filename'];
+        }
 
         return  $return;
 
