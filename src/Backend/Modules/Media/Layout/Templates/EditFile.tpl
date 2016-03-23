@@ -2,10 +2,10 @@
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/StructureStartModule.tpl}
 
 <div class="pageTitle">
-    <h2>{$lblMedia|ucfirst}: {$lblEdit}</h2>
+    <h2>{$lblMedia|ucfirst}: {$lblEditFile}</h2>
 
      <div class="buttonHolderRight">
-        <a href="{$var|geturl:'Index'}" class="button icon iconBack" title="{$lblBack|ucfirst}">
+        <a href="{$var|geturl:'Index'}&amp;folder_id={$record.folder_id}" class="button icon iconBack" title="{$lblBack|ucfirst}">
             <span>{$lblBack|ucfirst}</span>
         </a>
     </div>
@@ -54,18 +54,33 @@
 				</div>
 
 
+				<div id="replaceFileDialog" class="forkForms" title="{$lblReplaceFile|ucfirst}" style="display: none;">
+	                <div id="js-uploadify-queue"></div>
+	                <p>
+	                    <input id="js-uploadify" name="files" type="file" multiple="true">
+	                </p>
+				</div>
+
                 {option:record.is_image}
                 <div class="box">
                     <div class="heading">
                         <h3>
-                            <label for="image">{$lblImage|ucfirst}</label>
+                            {$lblPreview|ucfirst}
                         </h3>
                     </div>
                     <div class="options">
                         <p>
-                            <img src="{$record.preview_file_url}">
+                            <img src="{$record.preview_file_url}" id="editableimage">
                         </p>
                     </div>
+                     <div class="options">
+						<p>
+							<a href="#" class="button js-replace-file">{$lblReplace|ucfirst}</a> 
+							<a class="button" href="#" onclick="return launchEditor('editableimage', '{$record.file_url}');">{$lblEditImage|ucfirst}!</a>
+						</p>
+						
+
+                     </div>
                 </div>
                 {/option:record.is_image}
 
@@ -83,6 +98,26 @@
                         {$ddmFolder} {$ddmFolderError}
                     </div>
                 </div>
+
+
+                {option:!record.is_image}
+                <div class="box">
+                    <div class="heading">
+                        <h3>
+                            {$lblFile|ucfirst}
+                        </h3>
+                    </div>
+                    <div class="options">
+                        <p>
+                            <a target="_blank" href="{$record.file_url}">{$record.filename}</a>
+                        </p>
+                    </div>
+
+                     <div class="options">
+						<p><a href="#" class="button js-replace-file">{$lblReplaceFile|ucfirst}</a></p>
+                     </div>
+                </div>
+                {/option:!record.is_image}
 				
 				
 
@@ -101,7 +136,7 @@
 
     <div id="confirmDelete" title="{$lblDelete|ucfirst}?" style="display: none;">
         <p>
-            {$msgConfirmDeleteFile}
+            {$msgConfirmDelete}
         </p>
     </div>
 {/form:edit}

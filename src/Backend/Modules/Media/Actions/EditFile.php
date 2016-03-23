@@ -8,6 +8,7 @@ use Backend\Core\Engine\Language;
 use Backend\Core\Engine\Model;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 use Backend\Core\Engine\Form as BackendForm;
+use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
 
 
 /**
@@ -33,8 +34,9 @@ class EditFile extends BackendBaseActionEdit
 
              // add js
             $this->header->addJS('jquery.uploadifive.js');
-            $this->header->addJS('MediaUploaderInit.js', null, false);
-
+            $this->header->addJS('MediaUploaderReplaceInit.js', null, false);
+            //$this->header->addJS('MediaEditFileInit.js', null, false);
+            
             // add css
             $this->header->addCSS('uploadifive.css');
 
@@ -55,6 +57,7 @@ class EditFile extends BackendBaseActionEdit
     {
         $this->languages = BackendMediaModel::getActiveLanguages();
         $this->record = BackendMediaModel::getFile($this->id);
+        $this->allowed_file_types = BackendMediaModel::getAllAllowedFileTypesForJavascriptByType($this->record['type']);
     }
 
     /**
@@ -64,6 +67,9 @@ class EditFile extends BackendBaseActionEdit
     {
         // create form
         $this->frm = new BackendForm('edit');
+
+        $folders = BackendMediaTreeModel::getFolderTreeForDropdown();
+        $this->frm->addDropdown('folder', $folders, $this->record['folder_id']); 
 
         foreach($this->languages as &$language)
         {
@@ -82,6 +88,17 @@ class EditFile extends BackendBaseActionEdit
 
         $this->tpl->assign('languages', $this->languages);
         $this->tpl->assign('record', $this->record);
+
+        $timestamp = time();
+
+        $this->header->addJSData('media','upload_timestamp', $timestamp);
+        $this->header->addJSData('media','upload_token', md5($timestamp));
+        $this->header->addJSData('media','allowed_file_types', $this->allowed_file_types);
+
+        $this->header->addJSData('media','id', $this->record['id']);
+
+        $this->header->addJSData('media','upload_uploaded_success_url', '');
+        $this->header->addJSData('media','upload_uploaded_fallback_url', ''); // not supported page
     }
 
     /**
@@ -94,9 +111,10 @@ class EditFile extends BackendBaseActionEdit
              if ($this->frm->isCorrect()) {
 
                 $item['id'] = $this->id;
+                $item['folder_id'] = $this->frm->getField('folder')->getValue();
+                $item['edited_on'] = Model::getUTCDate();
 
-                 $content = array();
-
+                $content = array();
                 foreach($this->languages as $language)
                 {
                     $specific['media_id'] = $item['id'];
@@ -107,8 +125,11 @@ class EditFile extends BackendBaseActionEdit
                 }
 
                 BackendMediaModel::updateFile($item);
-                BackendMediaModel::updateFileContent($content, $item['id'] );
+                BackendMediaModel::updateFileContent($content, $item['id']);
 
+                $this->redirect(
+                    Model::createURLForAction('EditFile') . '&report=saved&id=' . $this->record['id'] 
+                );
              }
         }
 

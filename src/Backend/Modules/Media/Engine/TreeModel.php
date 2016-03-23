@@ -68,10 +68,11 @@ class TreeModel
         return $return;
     }
 
-    public static function deleteFolderTreeHTMLCache()
+    public static function deleteFolderTreeCache()
     {
         $fs = new Filesystem();
         $fs->remove(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
+        $fs->remove(BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl');
     }
 
 
@@ -88,6 +89,33 @@ class TreeModel
         }
 
         return file_get_contents(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
+    }
+
+    public static function getFolderTreeForDropdown()
+    { 
+         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl')) {
+
+            $value = self::folderArrayTreeToDropdownList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
+            $fs = new Filesystem();
+            $fs->dumpFile(
+                BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl',
+                serialize($value)
+            );
+        }
+
+        return unserialize(file_get_contents(BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl'));
+    }
+
+    public static function folderArrayTreeToDropdownList($tree, $depth = 0, $return = array())
+    {       
+
+        foreach($tree as $node) {
+
+            $return[$node['id']] = str_repeat('--', $depth) . ' ' . $node['name'];
+            if(isset($node['children'])) return self::folderArrayTreeToDropdownList($node['children'], $depth+1, $return);
+        }
+        
+        return $return;
     }
 
 

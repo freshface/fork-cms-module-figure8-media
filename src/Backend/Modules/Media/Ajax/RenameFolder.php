@@ -46,7 +46,7 @@ class RenameFolder extends BackendBaseAJAXAction
             $success = BackendMediaTreeModel::renameFolder($data);
 
             // build cache
-            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::deleteFolderTreeCache();
             BackendMediaTreeModel::getFolderTreeHTML();
 
             // output

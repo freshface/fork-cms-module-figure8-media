@@ -1,6 +1,6 @@
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/Head.tpl}
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/StructureStartModule.tpl}
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 <div class="pageTitle">
     <h2>
         {$lblMedia|ucfirst}
@@ -18,6 +18,13 @@
             <td id="pagesTree">
                 <div class="js-tree">
                     {$tree}
+                </div>
+                <div class="tree-instructions">
+                <p>
+                    <small>
+                        {$msgTreeInstructions}
+                    </small>
+                </p>
                 </div>
             </td>
             <td width="20">&nbsp;</td>

@@ -63,6 +63,10 @@
 	border-radius: 4px;
 }
 
+.tree-instructions {
+	padding: 10px;
+}
+
 #js-uploadify-queue .uploadifive-queue-item:last-child,
 #js-uploadify-queue:empty {
 	margin-bottom: 12px;
@@ -72,6 +76,11 @@
 	border: none;
 	text-decoration: none;
 }
+
+.pull-right {
+	float: right;
+}
+
 
 .uploadifive-select-button {
 	display: inline-block;

@@ -1,5 +1,3 @@
-# Dump of table media_albums
-# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `media_albums`;
 
@@ -28,7 +26,7 @@ CREATE TABLE `media_allowed_file_types` (
   `mimetype` varchar(255) DEFAULT NULL,
   `type` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 LOCK TABLES `media_allowed_file_types` WRITE;
 /*!40000 ALTER TABLE `media_allowed_file_types` DISABLE KEYS */;
@@ -81,7 +79,6 @@ CREATE TABLE `media_folders` (
   KEY `parent_id` (`parent_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
-
 # Dump of table media_library
 # ------------------------------------------------------------
 
@@ -98,12 +95,10 @@ CREATE TABLE `media_library` (
   `created_on` datetime DEFAULT NULL,
   `edited_on` datetime DEFAULT NULL,
   `modified` enum('N','Y') DEFAULT NULL,
-  `extension` varchar(10) CHARACTER SET latin1 DEFAULT NULL,
+  `extension` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `folder_id` (`folder_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
-
-
 
 
 # Dump of table media_library_content
@@ -114,13 +109,12 @@ DROP TABLE IF EXISTS `media_library_content`;
 CREATE TABLE `media_library_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `media_id` int(11) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   `text` text,
-  `lang` varchar(5) DEFAULT NULL,
+  `language` varchar(5) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `media_id` (`media_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
-
 
 
 # Dump of table media_linked_album_media

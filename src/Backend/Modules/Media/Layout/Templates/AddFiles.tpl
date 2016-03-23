@@ -5,11 +5,14 @@
     <h2>
         {$lblUpload|ucfirst}
     </h2>
-</div>
 
-<form>
-    <div class="content">
-        
+     <div class="buttonHolderRight">
+      <div class="pull-right">{$lblFolder}: {$ddmFolder}</div>
+    </div>
+
+</div>
+    {option:folder}
+    <form>
         <div class="box">
             <div class="heading">
                 <h3>{$lblFiles|ucfirst}</h3>
@@ -21,19 +24,27 @@
                 </p>
             </div>
         </div>
-    </div>
-    <div class="fullwidthOptions">
-            <a href="{$var|geturl:'Index'}&amp;folder_id={$folder.id}" class="button linkButton">
-                <span>{$lblCancel|ucfirst}</span>
-            </a>
-        <div class="buttonHolderRight">
+        
+        <div class="fullwidthOptions">
+                <a href="{$var|geturl:'Index'}&amp;folder_id={$folder.id}" class="button linkButton">
+                    <span>{$lblCancel|ucfirst}</span>
+                </a>
+            <div class="buttonHolderRight">
 
-           <a href="#" class="button mainButton js-upload-start">{$lblUploadImages|ucfirst}</a>
+               <a href="#" class="button mainButton js-upload-start">{$lblUpload|ucfirst}</a>
 
+            </div>
         </div>
+    </form>
+    {/option:folder}
+
+    {option:!folder}
+    <div class="generalMessage infoMessage content">
+        <p class="p0">
+            {$msgSelectAFolderToUploadIn}
+        </p>
     </div>
- 
-</form>
+    {/option:!folder}
 
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/StructureEndModule.tpl}
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/Footer.tpl}

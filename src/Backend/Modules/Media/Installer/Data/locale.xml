@@ -10,6 +10,56 @@
 				<translation language="nl"><![CDATA[bibliotheek]]></translation>
 				<translation language="en"><![CDATA[library]]></translation>
 			</item>
+			<item type="label" name="Albums">
+				<translation language="nl"><![CDATA[albums]]></translation>
+				<translation language="en"><![CDATA[albums]]></translation>
+			</item>
+			<item type="label" name="Replace">
+				<translation language="nl"><![CDATA[vervang]]></translation>
+				<translation language="en"><![CDATA[replace]]></translation>
+			</item>
+			<item type="label" name="EditImage">
+				<translation language="nl"><![CDATA[bewerk afbeelding]]></translation>
+				<translation language="en"><![CDATA[edit image]]></translation>
+			</item>
+			<item type="label" name="Upload">
+				<translation language="nl"><![CDATA[opladen]]></translation>
+				<translation language="en"><![CDATA[upload]]></translation>
+			</item>
+			<item type="label" name="Folder">
+				<translation language="nl"><![CDATA[map]]></translation>
+				<translation language="en"><![CDATA[folder]]></translation>
+			</item>
+			<item type="label" name="Files">
+				<translation language="nl"><![CDATA[bestanden]]></translation>
+				<translation language="en"><![CDATA[files]]></translation>
+			</item>
+			<item type="label" name="EditFile">
+				<translation language="nl"><![CDATA[wijzig bestand]]></translation>
+				<translation language="en"><![CDATA[edit file]]></translation>
+			</item>
+			<item type="label" name="SelectFile">
+				<translation language="nl"><![CDATA[selecteer bestand]]></translation>
+				<translation language="en"><![CDATA[select file]]></translation>
+			</item>
+			<item type="label" name="SelectFiles">
+				<translation language="nl"><![CDATA[selecteer bestanden]]></translation>
+				<translation language="en"><![CDATA[select files]]></translation>
+			</item>
+			<item type="message" name="TreeInstructions">
+				<translation language="nl"><![CDATA[Versleep een map om de volgorde te veranderen of rechtermuisklik on een nieuwe aan te maken of de naam te wijzigen.]]></translation>
+				<translation language="en"><![CDATA[Drag a folder to re-arrange or right-click to create a new folder or rename.]]></translation>
+			</item>
+			<item type="message" name="ConfirmDelete">
+				<translation language="nl"><![CDATA[Ben je zeker dat je dit wil verwijderen?]]></translation>
+				<translation language="en"><![CDATA[Are you sure you want to delete this?]]></translation>
+			</item>
+			<item type="message" name="SelectAFolderToUploadIn">
+				<translation language="nl"><![CDATA[Selecteer een map waar de media in moet komen.]]></translation>
+				<translation language="en"><![CDATA[Select a folder where the media should be stored in.]]></translation>
+			</item>
+
+			
 		</Media>
 		<Core>
 			<item type="label" name="Media">

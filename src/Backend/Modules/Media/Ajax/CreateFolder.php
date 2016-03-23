@@ -48,7 +48,7 @@ class CreateFolder extends BackendBaseAJAXAction
             $success = BackendMediaTreeModel::createFolder($data);
 
             // build cache
-            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::deleteFolderTreeCache();
             BackendMediaTreeModel::getFolderTreeHTML();
 
             // output

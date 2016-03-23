@@ -43,7 +43,13 @@ class Index extends ActionIndex
         $this->folder_id = $this->getParameter('folder_id', 'int');
         $this->tree = BackendMediaTreeModel::getFolderTreeHTML();
         $this->folder = BackendMediaTreeModel::getFolder($this->folder_id);
-        $this->library = BackendMediaModel::getLibraryForFolder($this->folder_id);
+        
+
+        if(empty($this->folder)) {
+            $this->library = BackendMediaModel::getLibrary();
+        } else {
+            $this->library = BackendMediaModel::getLibraryForFolder($this->folder_id);
+        }
     }
 
 
@@ -52,6 +58,8 @@ class Index extends ActionIndex
      */
     protected function parse()
     {   
+        parent::parse();
+
         $this->tpl->assign("library", $this->library);
         $this->tpl->assign("folder", $this->folder);
         $this->tpl->assign("tree", $this->tree);

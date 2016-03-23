@@ -54,7 +54,7 @@ class MoveFolder extends BackendBaseAJAXAction
             }
 
             // build cache
-            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::deleteFolderTreeCache();
             BackendMediaTreeModel::getFolderTreeHTML();
 
             // output

@@ -6,7 +6,12 @@ jsBackend.media.uploader =
 {
 	// constructor
 	init: function()
-	{
+	{		
+		$('#folder').change(function(e){
+			window.location = jsBackend.data.get('media.add_files_url') + '&folder_id=' + $(this).val();
+
+		});
+
 		if($('#js-uploadify').length > 0)
 		{
 			$('#js-uploadify').uploadifive({
@@ -29,13 +34,13 @@ jsBackend.media.uploader =
 					'removeCompleted' 	: false,
 					'buttonClass'		: 'uploadifive-select-button',
 					'fileType'     		: jsBackend.data.get('media.allowed_file_types'),
-					'buttonText'		: jsBackend.locale.lbl('SelectFiles'),
+					'buttonText'		: utils.string.ucfirst(jsBackend.locale.lbl('SelectFiles')),
 					'onQueueComplete' 	: function(file, data)
 					{ 
-						//window.location = jsBackend.data.get('media.upload_uploaded_success_url')
+						window.location = jsBackend.data.get('media.upload_uploaded_success_url')
 					},
 					'onFallback'		: function() {
-						window.location = jsBackend.data.get('media.upload_uploaded_fallback_url')
+						//window.location = jsBackend.data.get('media.upload_uploaded_fallback_url')
 					 }
 				});
 

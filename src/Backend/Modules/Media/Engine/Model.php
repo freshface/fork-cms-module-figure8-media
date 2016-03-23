@@ -57,6 +57,17 @@ class Model
         );
     }
 
+    public static function getAllAllowedFileMimetypesByType($type)
+    {
+        return (array) BackendModel::get('database')->getColumn(
+            'SELECT i.mimetype
+             FROM media_allowed_file_types AS i WHERE i.mimetype IS NOT NULL AND i.type = ?', array($type)
+        );
+    }
+
+
+
+
     public static function getAllAllowedTypeByMimetype($mimetype)
     {
         return (string) BackendModel::get('database')->getVar(
@@ -74,8 +85,15 @@ class Model
 
         return implode(',', $types);
     }
+     public static function getAllAllowedFileTypesForJavascriptByType($type)
+    {
+        $types = (array) BackendModel::get('database')->getColumn(
+            'SELECT i.mimetype
+             FROM media_allowed_file_types AS i WHERE i.mimetype IS NOT NULL AND i.type = ?', array((string) $type)
+        );
 
-   
+        return implode(',', $types);
+    }
 
     public static function insertFile($data)
     {
@@ -85,7 +103,7 @@ class Model
     public static function updateFile($data)
     {
            BackendModel::get('database')->update(
-                'media_library', array($data), 'id = ?', (int) $data['id']
+                'media_library', $data, 'id = ?', (int) $data['id']
             );
     }
 
@@ -120,7 +138,6 @@ class Model
 
         $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
         $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-
         
         $return['data'] = @unserialize($return['data']);
         $return['is_' . $return['type']] = true;
@@ -141,7 +158,7 @@ class Model
         BackendModel::get('database')->insert('media_library_content', $content);
     }
 
-    public static function updateContent(array $content, $id)
+    public static function updateFileContent(array $content, $id)
     {
         $db = BackendModel::get('database');
         foreach($content as $language => $row)
@@ -158,8 +175,34 @@ class Model
         $return =  (array) $db->getRecords(
             'SELECT i.*
              FROM media_library AS i
-             WHERE i.folder_id = ?',
+             WHERE i.folder_id = ? ORDER BY i.edited_on DESC',
             array((int) $id)
+        );
+
+        $edit_url = BackendModel::createURLForAction('EditFile');
+        $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+
+        foreach ($return as &$record){
+            $record['data'] = @unserialize($record['data']);
+            $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
+            $record['is_' . $record['type']] = true;
+            $record['file_url'] = $files_path . '/' . $record['filename'];
+            $record['preview_file_url'] = $preview_files_path . '/' . $record['filename'];
+        }
+
+        return  $return;
+    }
+
+    public static function getLibrary()
+    {
+        $db = BackendModel::get('database');
+
+        $return =  (array) $db->getRecords(
+            'SELECT i.*
+             FROM media_library AS i
+             WHERE 1 ORDER BY i.edited_on DESC',
+            array()
         );
 
         $edit_url = BackendModel::createURLForAction('EditFile');
