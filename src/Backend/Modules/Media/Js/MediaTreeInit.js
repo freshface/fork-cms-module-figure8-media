@@ -1,68 +1,5 @@
-/*
- * This file is part of Fork CMS.
- *
- * For the full copyright and license information, please view the license
- * file that was distributed with this source code.
- */
-
-/**
- * Interaction for the Media module
- *
- * @author Frederik Heyninck <frederik@figure8.be>
- */
-jsBackend.media =
-{
-	// constructor
-	init: function()
-	{
-		jsBackend.media.tree.init();
-		jsBackend.media.uploader.init();
-	}
-}
-
-jsBackend.media.uploader =
-{
-	// constructor
-	init: function()
-	{
-		if($('#js-uploadify').length > 0)
-		{
-			$('#js-uploadify').uploadifive({
-					'auto'             	: false,
-					'debug'				: jsBackend.current.debug,
-					'formData'         	: {
-											'simUploadLimit' : 1,
-											'timestamp' : jsBackend.data.get('media.upload_timestamp'),
-											'token'     : jsBackend.data.get('media.upload_token'),
-											'folder_id'     : jsBackend.data.get('media.folder_id'),
-											'fork[module]'     : jsBackend.current.module,
-											'fork[action]'	: 'Upload',
-											'fork[language]'	: jsBackend.current.language
-										 },
-					'queueID'			: 'js-uploadify-queue',
-					'uploadScript' 		: '/backend/ajax',
-					'removeCompleted' 	: false,
-					'buttonClass'		: 'uploadifive-select-button',
-					'fileType'     		: jsBackend.data.get('media.allowed_file_types'),
-					'buttonText'		: jsBackend.locale.lbl('SelectFiles'),
-					'onQueueComplete' 	: function(file, data)
-					{ 
-						//window.location = jsBackend.data.get('media.upload_uploaded_success_url')
-					},
-					'onFallback'		: function() {
-						window.location = jsBackend.data.get('media.upload_uploaded_fallback_url')
-					 }
-				});
-
-
-			$('.js-upload-start').click(function(e){
-				e.preventDefault();
-				$('#js-uploadify').uploadifive('upload')
-			});
-
-			$('.uploadifive-button').removeClass('uploadifive-button');
-		}
-	}
+if (typeof jsBackend.media == "undefined") {
+   jsBackend.media = {};
 }
 
 jsBackend.media.tree =
@@ -160,6 +97,47 @@ jsBackend.media.tree =
 				}
 			});
 
+
+			$('.js-tree').on('move_node.jstree', function (node, parent, position, old_parent, old_position, is_multi, old_instance, new_instance) {
+                var to = $('#' + parent.parent).find('a').first().data('id');
+
+                $('.js-tree').jstree(true).open_node(('#' + parent.parent));
+
+                var id =  $('#' + parent.node.id).find('a').first().data('id');
+                var ids = $('#' + parent.parent + ' > ul a').map(function() { return $(this).data('id'); }).get();
+                	ids = ids.join();
+
+                // make the call
+				$.ajax(
+				{
+					data:
+					{
+						fork: { action: 'MoveFolder' },
+						id: id,
+						dropped_on: to,
+						ids: ids
+					},
+					success: function(json, textStatus)
+					{
+						if(json.code != 200)
+						{
+							if(jsBackend.debug) alert(textStatus);
+
+							// show message
+							jsBackend.messages.add('error', jsBackend.locale.err('CantBeMoved'));
+
+						}
+						else
+						{
+							// show message
+							jsBackend.messages.add('success', jsBackend.locale.msg('FolderIsMoved'));
+						}
+					}
+				});
+
+
+            });
+			/*
 			$(document).on('dnd_stop.vakata', function (data, element, helper, event) {
 				var id = $('#' + element.element.id).data('id');
 				var to = $(element.event.target).data('id');
@@ -192,7 +170,7 @@ jsBackend.media.tree =
 						}
 					}
 				});
-			});
+			});*/
 
 			$(".js-tree").bind('select_node.jstree', function(node, selected, event) {
 			   
@@ -204,10 +182,8 @@ jsBackend.media.tree =
 			 
 			 $('.js-tree').on('rename_node.jstree', function (node, text, old) {
 
-				console.log($('#' + text.node.id).find('a').first())
 				var id = $('#' + text.node.id).find('a').first().data('id');
 				var name = text.text;
-
 				
 				// make the call
 				$.ajax(
@@ -245,4 +221,4 @@ jsBackend.media.tree =
 
 
 
-$(jsBackend.media.init);
+$(jsBackend.media.tree.init);

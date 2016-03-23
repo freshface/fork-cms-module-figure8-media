@@ -7,13 +7,14 @@ use Backend\Core\Engine\Authentication;
 use Backend\Core\Engine\Language;
 use Backend\Core\Engine\Model;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
+use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
 
 /**
  * This is the index-action (default), it will display the overview of Media posts
  *
  * @author Frederik Heyninck <frederik@figure8.be>
  */
-class Add extends BackendBaseActionAdd
+class AddFiles extends BackendBaseActionAdd
 {
     /**
      * Execute the action
@@ -24,7 +25,7 @@ class Add extends BackendBaseActionAdd
 
         // add js
         $this->header->addJS('jquery.uploadifive.js');
-        $this->header->addJS('MediaInit.js', null, false);
+        $this->header->addJS('MediaUploaderInit.js', null, false);
 
         // add css
         $this->header->addCSS('uploadifive.css');
@@ -41,8 +42,8 @@ class Add extends BackendBaseActionAdd
     protected function getData()
     {
         $this->folder_id = $this->getParameter('folder_id', 'int');
-        $this->tree = BackendMediaModel::getFolderTreeHTML();
-        $this->folder = BackendMediaModel::getFolder($this->folder_id);
+        $this->tree = BackendMediaTreeModel::getFolderTreeHTML();
+        $this->folder = BackendMediaTreeModel::getFolder($this->folder_id);
         $this->library = BackendMediaModel::getLibraryForFolder($this->folder_id);
         $this->allowed_file_types = BackendMediaModel::getAllAllowedFileTypesForJavascript();
     }

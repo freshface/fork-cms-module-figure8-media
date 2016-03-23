@@ -5,6 +5,7 @@ namespace Backend\Modules\Media\Ajax;
 use Backend\Core\Engine\Base\AjaxAction as BackendBaseAJAXAction;
 use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
+use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
 
 class MoveFolder extends BackendBaseAJAXAction
 {
@@ -19,6 +20,7 @@ class MoveFolder extends BackendBaseAJAXAction
         // get parameters
         $id = \SpoonFilter::getPostValue('id', null, 0, 'int');
         $dropped_on = \SpoonFilter::getPostValue('dropped_on', null, 0, 'int');
+        $ids = \SpoonFilter::getPostValue('ids', null, '', 'string');
 
         // init validation
         $errors = array();
@@ -38,11 +40,22 @@ class MoveFolder extends BackendBaseAJAXAction
                 'dropped_on' => $dropped_on
             );
 
-            $success = BackendMediaModel::moveFolder($data);
+            $success = BackendMediaTreeModel::moveFolder($data);
+
+            $ids = explode(',', $ids);
+            $sequence = 1;
+            foreach ($ids as $id) {
+
+                $data = array();
+                $data['id'] = $id;
+                $data['sequence'] = $sequence;
+                BackendMediaTreeModel::updateFolder($data);
+                $sequence++; 
+            }
 
             // build cache
-            BackendMediaModel::deleteFolderTreeHTMLCache();
-            BackendMediaModel::getFolderTreeHTML();
+            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::getFolderTreeHTML();
 
             // output
             if ($success) {

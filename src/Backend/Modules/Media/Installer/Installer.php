@@ -27,13 +27,13 @@ class Installer extends ModuleInstaller
         $this->setModuleRights(1, 'Media');
 
         $this->setActionRights(1, 'Media', 'Index');
-        $this->setActionRights(1, 'Media', 'Add');
-        $this->setActionRights(1, 'Media', 'Edit');
+        $this->setActionRights(1, 'Media', 'AddFiles');
+        $this->setActionRights(1, 'Media', 'EditFile');
         $this->setActionRights(1, 'Media', 'Delete');
         $this->setActionRights(1, 'Media', 'Upload');
         $this->setActionRights(1, 'Media', 'Delete');
         $this->setActionRights(1, 'Media', 'Settings');
-        $this->setActionRights(1, 'Media', 'Widgets');
+        $this->setActionRights(1, 'Media', 'Albums');
         $this->setActionRights(1, 'Media', 'EditAlbum');
         $this->setActionRights(1, 'Media', 'AddAlbum');
         $this->setActionRights(1, 'Media', 'DeleteAlbum');
@@ -46,13 +46,13 @@ class Installer extends ModuleInstaller
             $navigationModulesId,
             'Library',
             'media/index',
-            array('media/add','media/edit_file')
+            array('media/add_files','media/edit_file')
         );
 
         $this->setNavigation(
             $navigationModulesId,
-            'Widgets',
-            'media/widgets',
+            'Albums',
+            'media/albums',
             array('media/add_widget', 'media/edit_widget')
         );
 

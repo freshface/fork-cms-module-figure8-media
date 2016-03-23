@@ -3,9 +3,10 @@
 namespace Backend\Modules\Media\Engine;
 
 use Backend\Core\Engine\Model as BackendModel;
-use Backend\Core\Engine\Language;
 use Symfony\Component\Filesystem\Filesystem;
 use Backend\Core\Engine\Language;
+
+use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 /**
  * In this file we store all generic functions that we will be using in the Media module
@@ -15,11 +16,25 @@ use Backend\Core\Engine\Language;
 class Model
 {
 
-    public static function getLanguages()
+    public static function getActiveLanguages()
     {
         $languages = array();
 
         foreach(Language::getActiveLanguages() as $abbreviation) {
+            $languages[] = array('abbreviation' => $abbreviation, 'label' => Language::getLabel(mb_strtoupper($abbreviation)));
+        }
+
+        return $languages;
+    }
+
+     public static function getAllLanguages()
+    {
+        $all_languages = 'a:13:{i:0;s:2:"en";i:1;s:2:"zh";i:2;s:2:"nl";i:3;s:2:"fr";i:4;s:2:"de";i:5;s:2:"el";i:6;s:2:"hu";i:7;s:2:"it";i:8;s:2:"lt";i:9;s:2:"ru";i:10;s:2:"es";i:11;s:2:"sv";i:12;s:2:"uk";}';
+
+        $all_languages = unserialize($all_languages);
+        $languages = array();
+
+        foreach($all_languages as $abbreviation) {
             $languages[] = array('abbreviation' => $abbreviation, 'label' => Language::getLabel(mb_strtoupper($abbreviation)));
         }
 
@@ -60,31 +75,7 @@ class Model
         return implode(',', $types);
     }
 
-    public static function getFolderMaximumSequence()
-    {
-        return (int) BackendModel::get('database')->getVar(
-            'SELECT MAX(i.sequence)
-             FROM media_folders AS i'
-        );
-    }
-
-    public static function moveFolder($data)
-    {
-        BackendModel::get('database')->update(
-            'media_folders', array('parent_id' => $data['dropped_on']), 'id = ?', (int) $data['id']
-        );
-
-        return true;
-    }
-
-    public static function renameFolder($data)
-    {
-        BackendModel::get('database')->update(
-            'media_folders', array('name' => $data['name']), 'id = ?', (int) $data['id']
-        );
-
-        return true;
-    }
+   
 
     public static function insertFile($data)
     {
@@ -98,118 +89,25 @@ class Model
             );
     }
 
-    public static function createFolder($data)
+    public static function deleteFile($id)
     {
-         return (int) BackendModel::get('database')->insert('media_folders', array($data));
+        BackendModel::get('database')->delete('media_library', 'id = ?', (int) $id);
+        BackendModel::get('database')->delete('media_library_content', 'media_id = ?', (int) $id);
+        BackendModel::get('database')->delete('media_linked_album_media', 'media_id = ?', (int) $id);
     }
 
-    public static function folderArrayToFlatArray()
+    public static function existsFile($id)
     {
-       $array = self::getFolderArray();
-       $return = array();
-
-       foreach($array as $item){
-       
-            $return[$item['id']] = $item['parent_id'];
-            $return[$item['id']] = array('name' => $item['name'], 'parent_id' => $item['parent_id'], 'id' => $item['id']);
-       }
-
-        return $return;
-    }
-
-    public static function deleteFolderTreeHTMLCache()
-    {
-        $fs = new Filesystem();
-        $fs->remove(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
-    }
-
-
-    public static function getFolderTreeHTML()
-    { 
-         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl')) {
-
-            $value = self::folderArrayTreeToList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
-            $fs = new Filesystem();
-            $fs->dumpFile(
-                BACKEND_CACHE_PATH . '/Media/tree-ul.tpl',
-                $value
-            );
-        }
-
-        return file_get_contents(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl');
-    }
-
-
-    public static function folderArrayTreeToList($tree)
-    {       
-        $return = '<ul>';
-
-        foreach($tree as $node) {
-            $return .= '<li>';
-            $return .= '<a  href="#" data-id="' . $node['id'] .'">';
-            $return .= $node['name'];
-             $return .= '</a>';
-                if(isset($node['children'])) $return .= self::folderArrayTreeToList($node['children']);
-            $return .= '</li>';
-        }
-
-        $return .= '</ul>';
-        
-        return $return;
-    }
-
-    public static function flatFolderArrayToArrayTree($array)
-    {
-        $flat = array();
-        $tree = array();
-
-        foreach ($array as $child => $parent) {
-            if (!isset($flat[$child])) {
-                $flat[$child] = array('name' => $parent['name'], 'id' => $parent['id']);
-            }
-            if (!empty($parent['parent_id'])) {
-                $flat[$parent['parent_id']]['children'][$child] =& $flat[$child];
-            } else {
-                $tree[$child] =& $flat[$child];
-            }
-        }
-
-        return $tree;
-    }
-
-    public static function getFolderArray($parent = 0, $return = array())
-    {
-        $result = (array) BackendModel::get('database')->getRecords(
-            'SELECT i.name, i.parent_id, i.id
-             FROM media_folders AS i
-             WHERE i.parent_id = ? ORDER BY i.sequence',
-            array((int) $parent), 'id'
-        );
-
-        foreach($result as $row){
-            $return[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'], 'name' => $row['name']);
-            $return = self::getFolderArray($row['id'], $return);
-        }
-        
-        return $return;
-    }
-
-
-    public static function getFolder($id)
-    {
-        $db = BackendModel::get('database');
-
-        $return =  (array) $db->getRecord(
-            'SELECT i.*
-             FROM media_folders AS i
-             WHERE i.id = ?',
+        return (bool) BackendModel::get('database')->getVar(
+            'SELECT 1
+             FROM media_library AS i
+             WHERE i.id = ?
+             LIMIT 1',
             array((int) $id)
         );
-
-        return  $return;
     }
 
-     public static function getFile($id)
+    public static function getFile($id)
     {
         $db = BackendModel::get('database');
 
@@ -220,8 +118,38 @@ class Model
             array((int) $id)
         );
 
+        $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+
+        
+        $return['data'] = @unserialize($return['data']);
+        $return['is_' . $return['type']] = true;
+        $return['file_url'] = $files_path . '/' . $return['filename'];
+        $return['preview_file_url'] = $preview_files_path . '/' . $return['filename'];
+        
+         // data found
+        $return['content'] = (array) $db->getRecords(
+            'SELECT i.* FROM media_library_content AS i
+            WHERE i.media_id = ?',
+            array((int) $id), 'language');
+
         return  $return;
     }
+
+    public static function insertFileContent(array $content)
+    {
+        BackendModel::get('database')->insert('media_library_content', $content);
+    }
+
+    public static function updateContent(array $content, $id)
+    {
+        $db = BackendModel::get('database');
+        foreach($content as $language => $row)
+        {
+            $db->update('media_library_content', $row, 'media_id = ? AND language = ?', array($id, $language));
+        }
+    }
+
 
     public static function getLibraryForFolder($id)
     {
@@ -235,8 +163,8 @@ class Model
         );
 
         $edit_url = BackendModel::createURLForAction('EditFile');
-        $files_path = FRONTEND_FILES_URL . '/Media/files';
-        $preview_files_path = FRONTEND_FILES_URL . '/Media/preview_files';
+        $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
         foreach ($return as &$record){
             $record['data'] = @unserialize($record['data']);
@@ -247,12 +175,11 @@ class Model
         }
 
         return  $return;
-
     }
 
     public static function getFilename($filename, $id = null)
     {
-        $filename = (string) $filename;
+       $filename = (string) $filename;
 
        $path_parts = pathinfo($filename);
 

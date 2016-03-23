@@ -12,6 +12,8 @@ use Common\Uri as CommonUri;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
+use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
+
 /**
  * Upload action
  *
@@ -31,6 +33,7 @@ class Upload extends BackendBaseAJAXAction
 		$verify_token =  md5(\SpoonFilter::getPostValue('timestamp', null, '', 'string'));
 		$token = \SpoonFilter::getPostValue('token', null, '', 'string');
 		$this->folder_id = \SpoonFilter::getPostValue('folder_id', null, '', 'int');
+		$this->languages = BackendMediaModel::getAllLanguages();
 
 		if(!empty($_FILES))
 		{
@@ -74,7 +77,7 @@ class Upload extends BackendBaseAJAXAction
 			$extension = $file_parts['extension'];
 			$original_filename = $file_parts['filename'];
 
-			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypes(); // Allowed file extensions
+			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypes(); // Allowed file types
 
 			if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0)
 			{
@@ -82,8 +85,8 @@ class Upload extends BackendBaseAJAXAction
 				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
 
 				// path to folder
-				$files_path = FRONTEND_FILES_PATH . '/Media/files';
-				$preview_files_path = FRONTEND_FILES_PATH . '/Media/preview_files';
+				$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+				$preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 				
 				$fs = new Filesystem();
 				$fs->mkdir($files_path, 0775);
@@ -109,7 +112,6 @@ class Upload extends BackendBaseAJAXAction
 					$thumbnail->setForceOriginalAspectRatio(true);
 					$thumbnail->parseToFile($preview_files_path . '/' . $filename, 100);
 
-
 					list($width, $height) = getimagesize($files_path . '/' . $filename);
 
 					$data = array('portrait' => ($width > $height) ? false: true);
@@ -117,6 +119,19 @@ class Upload extends BackendBaseAJAXAction
 				}
 
 				$insert['id'] = BackendMediaModel::insertFile($insert);
+
+				// content
+				$content = array();
+                foreach($this->languages as $language)
+                {
+                    $specific['media_id'] = $insert['id'];
+                    $specific['language'] = $language['abbreviation'];
+                    $specific['name'] = str_replace(array('-','_'), array(' ', ' '), $file_parts['filename']);
+                    $specific['text'] = '';
+                    $content[$language['abbreviation']] = $specific;
+                }
+
+                 BackendMediaModel::insertFileContent($content);
 				
 			}
 			else

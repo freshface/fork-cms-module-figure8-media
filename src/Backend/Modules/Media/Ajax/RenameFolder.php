@@ -5,6 +5,7 @@ namespace Backend\Modules\Media\Ajax;
 use Backend\Core\Engine\Base\AjaxAction as BackendBaseAJAXAction;
 use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
+use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
 
 class RenameFolder extends BackendBaseAJAXAction
 {
@@ -42,11 +43,11 @@ class RenameFolder extends BackendBaseAJAXAction
                 'name' => $name
             );
 
-            $success = BackendMediaModel::renameFolder($data);
+            $success = BackendMediaTreeModel::renameFolder($data);
 
             // build cache
-            BackendMediaModel::deleteFolderTreeHTMLCache();
-            BackendMediaModel::getFolderTreeHTML();
+            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::getFolderTreeHTML();
 
             // output
             if ($success) {

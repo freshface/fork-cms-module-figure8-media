@@ -5,6 +5,7 @@ namespace Backend\Modules\Media\Ajax;
 use Backend\Core\Engine\Base\AjaxAction as BackendBaseAJAXAction;
 use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
+use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
 
 class CreateFolder extends BackendBaseAJAXAction
 {
@@ -40,15 +41,15 @@ class CreateFolder extends BackendBaseAJAXAction
             $data = array(
                 'parent_id' => $parent_id,
                 'name' => $name,
-                'sequence' => BackendMediaModel::getFolderMaximumSequence() + 1
+                'sequence' => BackendMediaTreeModel::getFolderMaximumSequence() + 1
             );
 
 
-            $success = BackendMediaModel::createFolder($data);
+            $success = BackendMediaTreeModel::createFolder($data);
 
             // build cache
-            BackendMediaModel::deleteFolderTreeHTMLCache();
-            BackendMediaModel::getFolderTreeHTML();
+            BackendMediaTreeModel::deleteFolderTreeHTMLCache();
+            BackendMediaTreeModel::getFolderTreeHTML();
 
             // output
             if ($success) {

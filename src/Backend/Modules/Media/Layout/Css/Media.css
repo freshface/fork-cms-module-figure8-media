@@ -74,6 +74,7 @@
 }
 
 .uploadifive-select-button {
+	display: inline-block;
 	height: 22px;
 	line-height: 22px;
 	white-space: nowrap;
