@@ -14,6 +14,111 @@
 				<translation language="nl"><![CDATA[albums]]></translation>
 				<translation language="en"><![CDATA[albums]]></translation>
 			</item>
+			<item type="label" name="Reset">
+				<translation language="nl"><![CDATA[reset]]></translation>
+				<translation language="en"><![CDATA[reset]]></translation>
+			</item>
+
+			<item type="label" name="Grid">
+				<translation language="nl"><![CDATA[grid]]></translation>
+				<translation language="en"><![CDATA[grid]]></translation>
+			</item>
+
+			<item type="label" name="List">
+				<translation language="nl"><![CDATA[lijst]]></translation>
+				<translation language="en"><![CDATA[list]]></translation>
+			</item>
+
+			<item type="label" name="AllMedia">
+				<translation language="nl"><![CDATA[alle media]]></translation>
+				<translation language="en"><![CDATA[all media]]></translation>
+			</item>
+
+			<item type="label" name="Documents">
+				<translation language="nl"><![CDATA[documenten]]></translation>
+				<translation language="en"><![CDATA[documents]]></translation>
+			</item>
+			<item type="label" name="Submit">
+				<translation language="nl"><![CDATA[submit]]></translation>
+				<translation language="en"><![CDATA[submit]]></translation>
+			</item>
+
+			<item type="label" name="Videos">
+				<translation language="nl"><![CDATA[video]]></translation>
+				<translation language="en"><![CDATA[video]]></translation>
+			</item>
+
+			<item type="label" name="Audio">
+				<translation language="nl"><![CDATA[audio]]></translation>
+				<translation language="en"><![CDATA[audio]]></translation>
+			</item>
+
+			<item type="label" name="SelectFolder">
+				<translation language="nl"><![CDATA[kies een map]]></translation>
+				<translation language="en"><![CDATA[select folder]]></translation>
+			</item>
+			<item type="error" name="ImageCantBeSaved">
+				<translation language="nl"><![CDATA[De afbeelding is niet opgeslagen.]]></translation>
+				<translation language="en"><![CDATA[The image can't be saved.]]></translation>
+			</item>
+
+			<item type="message" name="ImageIsSaved">
+				<translation language="nl"><![CDATA[De afbeelding is opgeslagen.]]></translation>
+				<translation language="en"><![CDATA[The image is saved.]]></translation>
+			</item>
+
+			<item type="message" name="NoResults">
+				<translation language="nl"><![CDATA[Er zijn geen resultaten.]]></translation>
+				<translation language="en"><![CDATA[No results found.]]></translation>
+			</item>
+
+
+
+			<item type="error" name="ImageCantBeReset">
+				<translation language="nl"><![CDATA[De afbeelding kan niet terug gezet worden.]]></translation>
+				<translation language="en"><![CDATA[The image can't be reset back.]]></translation>
+			</item>
+
+			<item type="message" name="ImageIsReset">
+				<translation language="nl"><![CDATA[De afbeelding is terug gezet.]]></translation>
+				<translation language="en"><![CDATA[The image is reset.]]></translation>
+			</item>
+
+
+			<item type="error" name="FolderCantBeRenamed">
+				<translation language="nl"><![CDATA[De map kan niet worden hernoemd.]]></translation>
+				<translation language="en"><![CDATA[The folder can't be renamed.]]></translation>
+			</item>
+
+			<item type="message" name="FolderIsRenamed">
+				<translation language="nl"><![CDATA[De map is hernoemd.]]></translation>
+				<translation language="en"><![CDATA[The folder is renamed.]]></translation>
+			</item>
+
+			<item type="error" name="FolderCantBeMoved">
+				<translation language="nl"><![CDATA[De map kan niet worden versleept.]]></translation>
+				<translation language="en"><![CDATA[The folder can't be moved.]]></translation>
+			</item>
+
+			<item type="message" name="FolderIsMoved">
+				<translation language="nl"><![CDATA[De map is versleept.]]></translation>
+				<translation language="en"><![CDATA[The folder is moved.]]></translation>
+			</item>
+
+			<item type="error" name="FolderCantBeCreated">
+				<translation language="nl"><![CDATA[De map kan worden aangemaakt.]]></translation>
+				<translation language="en"><![CDATA[The folder can't be created.]]></translation>
+			</item>
+
+			<item type="message" name="FolderIsCreated">
+				<translation language="nl"><![CDATA[De map is aangemaakt.]]></translation>
+				<translation language="en"><![CDATA[The folder is created.]]></translation>
+			</item>
+
+
+
+			
+
 			<item type="label" name="Replace">
 				<translation language="nl"><![CDATA[vervang]]></translation>
 				<translation language="en"><![CDATA[replace]]></translation>

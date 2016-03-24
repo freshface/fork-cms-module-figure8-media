@@ -3,12 +3,12 @@
 namespace Backend\Modules\Media\Actions;
 
 use Backend\Core\Engine\Base\ActionEdit as BackendBaseActionEdit;
-use Backend\Core\Engine\Authentication;
 use Backend\Core\Engine\Language;
 use Backend\Core\Engine\Model;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 use Backend\Core\Engine\Form as BackendForm;
 use Backend\Modules\Media\Engine\TreeModel as BackendMediaTreeModel;
+use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 
 /**
@@ -35,7 +35,12 @@ class EditFile extends BackendBaseActionEdit
              // add js
             $this->header->addJS('jquery.uploadifive.js');
             $this->header->addJS('MediaUploaderReplaceInit.js', null, false);
-            //$this->header->addJS('MediaEditFileInit.js', null, false);
+            $this->header->addJS('http://feather.aviary.com/imaging/v3/editor.js', null, false, true, false);
+            $this->header->addJS('MediaEditFileInit.js', null, false);
+
+            $this->header->addJS(FrontendMediaHelper::VIDEOJS_JS, null, false, true, false);
+            $this->header->addCSS(FrontendMediaHelper::VIDEOJS_CSS, null, true, false, false);
+
             
             // add css
             $this->header->addCSS('uploadifive.css');
@@ -88,6 +93,7 @@ class EditFile extends BackendBaseActionEdit
 
         $this->tpl->assign('languages', $this->languages);
         $this->tpl->assign('record', $this->record);
+        $this->tpl->assign('allow_feather_edit', in_array(strtolower($this->record['extension']), array('jpg','png')));
 
         $timestamp = time();
 
@@ -96,6 +102,11 @@ class EditFile extends BackendBaseActionEdit
         $this->header->addJSData('media','allowed_file_types', $this->allowed_file_types);
 
         $this->header->addJSData('media','id', $this->record['id']);
+
+
+        $feather_api_key = $this->get('fork.settings')->get($this->URL->getModule(), 'feather_api_key', 'your api key');
+        $this->header->addJSData('media','feather_api_key', $feather_api_key);
+        $this->tpl->assign('feather_api_key', $feather_api_key);
 
         $this->header->addJSData('media','upload_uploaded_success_url', '');
         $this->header->addJSData('media','upload_uploaded_fallback_url', ''); // not supported page

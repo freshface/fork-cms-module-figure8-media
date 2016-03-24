@@ -3,7 +3,6 @@
 namespace Backend\Modules\Media\Actions;
 
 use Backend\Core\Engine\Base\ActionAdd as BackendBaseActionEdit;
-use Backend\Core\Engine\Authentication;
 use Backend\Core\Engine\Language;
 use Backend\Core\Engine\Model;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;

@@ -102,9 +102,11 @@ class Model
 
     public static function updateFile($data)
     {
-           BackendModel::get('database')->update(
-                'media_library', $data, 'id = ?', (int) $data['id']
-            );
+       BackendModel::get('database')->update(
+            'media_library', $data, 'id = ?', (int) $data['id']
+        );
+
+       return true;
     }
 
     public static function deleteFile($id)
@@ -141,6 +143,7 @@ class Model
         
         $return['data'] = @unserialize($return['data']);
         $return['is_' . $return['type']] = true;
+        $return['is_modified'] = $return['modified'] == 'Y';
         $return['file_url'] = $files_path . '/' . $return['filename'];
         $return['preview_file_url'] = $preview_files_path . '/' . $return['filename'];
         
@@ -165,6 +168,62 @@ class Model
         {
             $db->update('media_library_content', $row, 'media_id = ? AND language = ?', array($id, $language));
         }
+    }
+
+    public static function getLibraryFiltered($filter = array())
+    {
+        $db = BackendModel::get('database');
+
+        $parameters = array();
+        $query = 'SELECT i.*, UNIX_TIMESTAMP(i.edited_on) as edited_on, c.name FROM media_library AS i INNER JOIN media_library_content AS c ON c.media_id = i.id AND c.language = ?';
+        $parameters[] = Language::getWorkingLanguage();
+
+        $query .= ' WHERE 1';
+
+        if($filter['folder_id'] !== null)
+        {
+            $query .= ' AND i.folder_id = ?';
+            $parameters[] = (int) $filter['folder_id'];
+        }
+
+        if($filter['type'] !== null)
+        {
+            $query .= ' AND i.type = ?';
+            $parameters[] = (string) $filter['type'];
+        }
+
+        if($filter['search'] !== null)
+        {
+            $query .= ' AND (i.original_filename LIKE ?';
+            $parameters[] = (string) '%' . $filter['search'] . '%';
+
+            $query .= ' OR c.name LIKE ?';
+            $parameters[] = (string) '%' . $filter['search'] . '%';
+
+            $query .= ' OR c.text LIKE ?)';
+            $parameters[] = (string) '%' . $filter['search'] . '%';
+        }
+
+        $return = (array) $db->getRecords($query, $parameters);
+
+         // no results?
+        if (empty($return)) {
+            return array();
+        }
+
+        $edit_url = BackendModel::createURLForAction('EditFile');
+        $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+
+        foreach ($return as &$record){
+            $record['data'] = @unserialize($record['data']);
+            $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
+            $record['is_' . $record['type']] = true;
+            $record['file_url'] = $files_path . '/' . $record['filename'];
+            $record['preview_file_url'] = $preview_files_path . '/' . $record['filename'];
+        }
+
+        return  $return;
     }
 
 

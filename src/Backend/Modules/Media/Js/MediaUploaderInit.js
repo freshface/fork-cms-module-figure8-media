@@ -12,6 +12,28 @@ jsBackend.media.uploader =
 
 		});
 
+		$selectFolderDialog = $('#selectFolderDialog');
+
+		if($selectFolderDialog.length > 0)
+		{
+			$selectFolderDialog.dialog(
+			{
+				autoOpen: true,
+				draggable: false,
+				resizable: false,
+				modal: true,
+				buttons:
+				[
+					
+				],
+				close: function(e, ui)
+				{
+
+				}
+			});
+		}
+
+
 		if($('#js-uploadify').length > 0)
 		{
 			$('#js-uploadify').uploadifive({

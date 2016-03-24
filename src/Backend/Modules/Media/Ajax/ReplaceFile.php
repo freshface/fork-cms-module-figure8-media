@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Finder\Finder;
 
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
+use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
 
 /**
  * Upload action
@@ -77,7 +78,7 @@ class ReplaceFile extends BackendBaseAJAXAction
 			$file_parts = pathinfo($file_data['name']);
 			$temp_file   = $file_data['tmp_name'];
 
-			$extension = $file_parts['extension'];
+			$extension = strtolower($file_parts['extension']);
 			$original_filename = $file_parts['filename'];
 
 			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypesByType($this->record['type']); // Allowed file types
@@ -85,27 +86,16 @@ class ReplaceFile extends BackendBaseAJAXAction
 			if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0)
 			{
 
-				  $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-		            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-		            $generated_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER;
+			  	$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+	            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
-		            $fs = new Filesystem();
-		            $fs->remove($files_path . '/' . $this->record['filename']);
-		            $fs->remove($files_path . '/' . $this->record['original_filename']);
+	            $fs = new Filesystem();
+	            $fs->remove($files_path . '/' . $this->record['filename']);
+	            $fs->remove($files_path . '/' . $this->record['original_filename']);
 
-		            $fs->remove($preview_files_path . '/' . $this->record['filename']);
+	            $fs->remove($preview_files_path . '/' . $this->record['filename']);
 
-
-		            $finder = new Finder();
-		            $fs = new Filesystem();
-		            $fs->mkdir($generated_files_path, 0775);
-		            foreach ($finder->directories()->in($generated_files_path) as $directory) {
-		                $fileName = $directory->getRealPath() . '/' . $this->record['filename'];
-		                if (is_file($fileName)) {
-		                    $fs->remove($fileName);
-		                }
-		            }
-
+	            BackendMediaHelper::removeGeneratedFiles($this->record['filename']);
 
 				// Generate a unique filename
 				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);

@@ -12,6 +12,8 @@ use Symfony\Component\Finder\Finder;
 
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
+use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
+
 /**
  * This is the delete-action, it deletes an item
  *
@@ -35,24 +37,14 @@ class DeleteFile extends ActionDelete
 
             $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
             $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-            $generated_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER;
 
             $fs = new Filesystem();
             $fs->remove($files_path . '/' . $this->record['filename']);
             $fs->remove($files_path . '/' . $this->record['original_filename']);
-
             $fs->remove($preview_files_path . '/' . $this->record['filename']);
+            BackendMediaHelper::removeGeneratedFiles($this->record['filename']);
 
-
-            $finder = new Finder();
-            $fs = new Filesystem();
-            $fs->mkdir($generated_files_path, 0775);
-            foreach ($finder->directories()->in($generated_files_path) as $directory) {
-                $fileName = $directory->getRealPath() . '/' . $this->record['filename'];
-                if (is_file($fileName)) {
-                    $fs->remove($fileName);
-                }
-            }
+           
 
             $this->redirect(
                 Model::createURLForAction('Index') . '&report=deleted&folder_id=' . $this->record['folder_id'] 

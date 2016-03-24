@@ -7,10 +7,18 @@ jsBackend.media.tree =
 	// constructor
 	init: function()
 	{
+		$("input[name=view]:radio").click(function () {
+			if($(this).val() == 'list') {
+				$('body').addClass('media-items-container-list');
+			} else {
+				$('body').removeClass('media-items-container-list');
+			}
+		});
+
+		if(utils.url.getGetValue('view') == 'list') $('body').addClass('media-items-container-list');
+
 		if($('.js-tree').length > 0)
 		{
-
-
 			$('.js-tree a[data-id=' + jsBackend.data.get('media.folder_id') + ']').closest('li').attr('data-jstree', '{"opened":true,"selected":true}');
 
 			$('.js-tree').jstree({
@@ -53,7 +61,7 @@ jsBackend.media.tree =
 													if(jsBackend.debug) alert(textStatus);
 
 													// show message
-													jsBackend.messages.add('error', jsBackend.locale.err('CantBeCreated'));
+													jsBackend.messages.add('error', jsBackend.locale.err('FolderCantBeCreated'));
 
 												}
 												else
@@ -124,7 +132,7 @@ jsBackend.media.tree =
 							if(jsBackend.debug) alert(textStatus);
 
 							// show message
-							jsBackend.messages.add('error', jsBackend.locale.err('CantBeMoved'));
+							jsBackend.messages.add('error', jsBackend.locale.err('FolderCantBeMoved'));
 
 						}
 						else
@@ -201,7 +209,7 @@ jsBackend.media.tree =
 							if(jsBackend.debug) alert(textStatus);
 
 							// show message
-							jsBackend.messages.add('error', jsBackend.locale.err('CantBeRenamed'));
+							jsBackend.messages.add('error', jsBackend.locale.err('FolderCantBeRenamed'));
 
 						}
 						else

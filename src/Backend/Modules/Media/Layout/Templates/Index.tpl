@@ -15,7 +15,7 @@
 <table width="100%">
     <tbody>
         <tr>
-            <td id="pagesTree">
+            <td id="pagesTree" style="width:240px;">
                 <div class="js-tree">
                     {$tree}
                 </div>
@@ -29,36 +29,92 @@
             </td>
             <td width="20">&nbsp;</td>
             <td  id="contentHolder">
-                {option:library}
-                    
-                    <div class="media-items cf">
-                    {iteration:library}
 
-                        <div class="media-item media-item-type-{$library.type}">
-                            <div class="media-item-media">
-                                <div class="media-item-preview" {option:library.is_image} style="background-image:url({$library.preview_file_url});" {/option:library.is_image}>
-                                    <a href="{$library.edit_url}">
+                <div class="media-items-container">
 
-                                        <div class="media-item-extension">.{$library.extension}</div>
-                                        
-                                    </a>
-                                </div>
-                            </div>
+                    <div class="media-items-search">
 
-                            <div class="media-item-meta">
-                                {$library.filename}
+                        {form:filter}
 
-                                <a href="{$library.edit_url}">{$lblEdit}</a>
-                            </div>
-                        </div>
+                            {$hidFolderId}
 
-                    {/iteration:library}
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <div class="media-items-search-view">
+                                         {iteration:view}
+                                            <label for="{$view.id}">{$view.rbtView} {$view.label}</label>
+                                        {/iteration:view}
+                                        </div>
+                                    </td>
+                                    <td>
+                                         {$ddmType}
+                                    </td>
+                                    <td>
+                                        {$txtSearch}
+                                    </td>
+                                    <td align="right">
+                                        <input type="submit" class="button" value="{$lblSubmit|ucfirst}">
+                                    </td>
+                                </tr>
+                            </table>
+                        {/form:filter}
+
                     </div>
-                {/option:library}
 
-                {option:!library}
+                    <div class="media-items-result">
 
-                {/option:!library}
+
+                        {option:library}
+                            <div class="media-items cf">
+                            {iteration:library}
+
+                                <div class="media-item media-item-type-{$library.type}">
+                                    <div class="media-item-inner cf">
+                                        <div class="media-item-hover">
+                                            <div class="media-item-hover-inner">
+                                                <div class="media-item-hover-meta">
+                                                    <p>
+                                                        <strong>{$library.name}</strong> <br>
+                                                        Filename: {$library.original_filename} <br>
+                                                        Type: {$library.type} <br>
+                                                        Last modified: {$library.edited_on|date:'d-m-Y H:i:s'} 
+                                                    </p>
+                                                </div>
+                                                <a href="{$library.edit_url}" class="button">{$lblEdit}</a>
+                                            </div>
+                                        </div>
+                                        <div class="media-item-media">
+                                            <div class="media-item-preview">
+                                                
+                                                    {option:library.is_image}<img src="{$library.preview_file_url}" alt="">{/option:library.is_image}
+                                                    {option:library.is_file}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_file}
+                                                    {option:library.is_audio}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_audio}
+                                                    {option:library.is_video}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_video}
+                                                
+                                            </div>
+                                        </div>
+
+                                        <div class="media-item-footer">
+                                            {$library.name}
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {/iteration:library}
+                            </div>
+                        {/option:library}
+
+                        {option:!library}
+
+                            <p>
+                                {$msgNoResults}
+                            </p>
+
+                        {/option:!library}
+                    </div>
+
+                </div>
             </td>
         </tr>
     </tbody>

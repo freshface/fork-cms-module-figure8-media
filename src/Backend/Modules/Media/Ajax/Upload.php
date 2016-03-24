@@ -82,7 +82,7 @@ class Upload extends BackendBaseAJAXAction
 			if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0)
 			{
 				// Generate a unique filename
-				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
+				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . strtolower($extension));
 
 				// path to folder
 				$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;

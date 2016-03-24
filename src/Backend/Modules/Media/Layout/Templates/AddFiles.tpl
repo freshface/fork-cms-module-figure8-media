@@ -5,12 +5,8 @@
     <h2>
         {$lblUpload|ucfirst}
     </h2>
-
-     <div class="buttonHolderRight">
-      <div class="pull-right">{$lblFolder}: {$ddmFolder}</div>
-    </div>
-
 </div>
+
     {option:folder}
     <form>
         <div class="box">
@@ -39,11 +35,11 @@
     {/option:folder}
 
     {option:!folder}
-    <div class="generalMessage infoMessage content">
-        <p class="p0">
-            {$msgSelectAFolderToUploadIn}
-        </p>
-    </div>
+        <div id="selectFolderDialog" class="forkForms" title="{$lblSelectFolder|ucfirst}" style="display: none;">
+            <p>
+                {$msgSelectAFolderToUploadIn} {$ddmFolder}
+            </p>
+        </div>
     {/option:!folder}
 
 {include:{$BACKEND_CORE_PATH}/Layout/Templates/StructureEndModule.tpl}
