@@ -78,9 +78,15 @@ class Index extends BackendBaseActionEdit
         $views = array();
         $views[] = array('label' => '<i class="fa fa-th"></i>', 'value' => 'grid');
         $views[] = array('label' => '<i class="fa fa-list"></i>', 'value' => 'list');
-        $this->frm->addRadiobutton('view', $views, 'grid');
+        $this->frm->addRadiobutton('view', $views, $this->filter['view']);
 
-        $this->frm->addHidden('folder_id', $this->filter['folder_id'] );
+        $this->frm->addHidden('folder_id', $this->filter['folder_id']);
+
+        $this->frm_action = new BackendForm('action');
+        $this->frm_action->addHidden('ids');
+        $actions = array();
+        $actions[] = array('label' => ucfirst(Language::getLabel('Delete')), 'value' => 'delete');
+        $this->frm_action->addRadiobutton('actions', $actions);
        
     }
 
@@ -89,6 +95,12 @@ class Index extends BackendBaseActionEdit
         // is the form submitted?
         if ($this->frm->isSubmitted()) {
              if ($this->frm->isCorrect()) {
+             }
+        }
+
+        // is the form submitted?
+        if ($this->frm_action->isSubmitted()) {
+             if ($this->frm_action->isCorrect()) {
              }
         }
     }
@@ -100,7 +112,7 @@ class Index extends BackendBaseActionEdit
     protected function parse()
     {   
         parent::parse();
-
+        $this->frm_action->parse($this->tpl);
         $this->tpl->assign("library", $this->library);
         $this->tpl->assign("folder", $this->folder);
         $this->tpl->assign("tree", $this->tree);
@@ -113,6 +125,7 @@ class Index extends BackendBaseActionEdit
         $this->filter['folder_id'] = $this->getParameter('folder_id', 'int');
         $this->filter['type'] = $this->getParameter('type', 'string');
         $this->filter['search'] = $this->getParameter('search', 'string');
+        $this->filter['view'] = $this->getParameter('view', 'string', 'grid');
     }
 
 }

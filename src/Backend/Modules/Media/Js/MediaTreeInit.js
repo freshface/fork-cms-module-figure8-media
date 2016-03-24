@@ -17,6 +17,21 @@ jsBackend.media.tree =
 
 		if(utils.url.getGetValue('view') == 'list') $('body').addClass('media-items-container-list');
 
+		var selected_ids = [];
+		$('.media-items .media-item').click(function(e){
+			
+			var id = $(this).data('id');
+			if($.inArray(id, selected_ids) < 0) {
+				selected_ids.push(id);
+				$(this).addClass('selected');
+			} else {
+				selected_ids.splice($.inArray(id, selected_ids), 1);
+				$(this).removeClass('selected');
+			}
+
+			$('#ids').val(selected_ids);
+		})
+
 		if($('.js-tree').length > 0)
 		{
 			$('.js-tree a[data-id=' + jsBackend.data.get('media.folder_id') + ']').closest('li').attr('data-jstree', '{"opened":true,"selected":true}');

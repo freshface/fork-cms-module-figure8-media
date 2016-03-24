@@ -81,6 +81,8 @@ class EditFile extends BackendBaseActionEdit
             $language['formElements']['txtName'] = $this->frm->addText('name_'. $language['abbreviation'], isset($this->record['content'][$language['abbreviation']]['name']) ? $this->record['content'][$language['abbreviation']]['name'] : '', null, 'inputText title');
             $language['formElements']['txtText'] = $this->frm->addEditor('text_'. $language['abbreviation'], isset($this->record['content'][$language['abbreviation']]['text']) ? $this->record['content'][$language['abbreviation']]['text'] : '');
         }
+
+        
     }
 
 
