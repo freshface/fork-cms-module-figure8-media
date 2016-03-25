@@ -32,12 +32,7 @@
 
                 <div class="media-items-container">
 
-                    <div class="media-items-actions">
-                    {form:action}
-                        {$hidIds}
-                        {$ddmActions}
-                    {/form:action}
-                    </div>
+                   
 
                     <div class="media-items-search">
 
@@ -68,6 +63,15 @@
                         {/form:filter}
 
                     </div>
+                    
+
+                    {form:action}
+
+                     <div class="media-items-actions cf">
+                        {$msgSelectAnAction} {$ddmActions}
+                        
+                         <input type="submit" class="button pull-right" value="{$lblSubmit|ucfirst}">
+                    </div>
 
                     <div class="media-items-result">
 
@@ -77,8 +81,10 @@
                             {iteration:library}
 
                                 <div class="media-item media-item-type-{$library.type}" data-id="{$library.id}">
+                                    <label for="ids{$library.id}">
                                     <div class="media-item-inner cf">
-
+                                        
+                                        <input type="checkbox" name="ids[]" value="{$library.id}" id="ids{$library.id}" />
                                         <div class="media-item-selected"><i class="fa fa-check"></i></div>
 
                                         <div class="media-item-hover">
@@ -109,6 +115,7 @@
                                             {$library.name}
                                         </div>
                                     </div>
+                                    </label>
                                 </div>
 
                             {/iteration:library}
@@ -123,6 +130,7 @@
 
                         {/option:!library}
                     </div>
+                    {/form:action}
 
                 </div>
             </td>

@@ -82,11 +82,11 @@ class Index extends BackendBaseActionEdit
 
         $this->frm->addHidden('folder_id', $this->filter['folder_id']);
 
-        $this->frm_action = new BackendForm('action');
-        $this->frm_action->addHidden('ids');
+        $this->frm_action = new BackendForm('action', Model::createURLForAction('IndexMassAction'), 'post');
         $actions = array();
-        $actions[] = array('label' => ucfirst(Language::getLabel('Delete')), 'value' => 'delete');
-        $this->frm_action->addRadiobutton('actions', $actions);
+        $actions['delete'] = ucfirst(Language::getLabel('Delete'));
+        $this->frm_action->addDropdown('actions', $actions)->setDefaultElement('','');
+        //$this->frm_action->addMultiCheckbox('ids');
        
     }
 

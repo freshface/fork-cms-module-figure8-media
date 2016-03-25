@@ -17,19 +17,18 @@ jsBackend.media.tree =
 
 		if(utils.url.getGetValue('view') == 'list') $('body').addClass('media-items-container-list');
 
-		var selected_ids = [];
-		$('.media-items .media-item').click(function(e){
+		$('.media-items .media-item label').click(function(e){
 			
-			var id = $(this).data('id');
-			if($.inArray(id, selected_ids) < 0) {
-				selected_ids.push(id);
-				$(this).addClass('selected');
+			$(this).closest('.media-item').toggleClass('selected');
+
+			var selected = $(".media-items .media-item input[type='checkbox']:checked");
+
+			if (selected.length > 0) {
+			    $('media-items-actions').show();
 			} else {
-				selected_ids.splice($.inArray(id, selected_ids), 1);
-				$(this).removeClass('selected');
+				$('media-items-actions').hide();
 			}
 
-			$('#ids').val(selected_ids);
 		})
 
 		if($('.js-tree').length > 0)
