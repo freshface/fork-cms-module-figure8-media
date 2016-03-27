@@ -69,7 +69,7 @@ class ResetModifiedImage extends BackendBaseAJAXAction
 
             list($width, $height) = getimagesize($files_path . '/' . $this->record['original_filename']);
 
-            $data = array('portrait' => ($width > $height) ? false: true);
+            $data['portrait'] = ($width > $height) ? false : true;
 
             $update['data'] = serialize($data);
 

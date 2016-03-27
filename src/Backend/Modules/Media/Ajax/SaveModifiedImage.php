@@ -85,8 +85,7 @@ class SaveModifiedImage extends BackendBaseAJAXAction
 
                 list($width, $height) = getimagesize($files_path . '/' . $new_filename);
 
-                $data = array('portrait' => ($width > $height) ? false: true);
-
+                $data['portrait'] = ($width > $height) ? false : true;
                 $update['data'] = serialize($data);
 
                 $success = BackendMediaModel::updateFile($update);

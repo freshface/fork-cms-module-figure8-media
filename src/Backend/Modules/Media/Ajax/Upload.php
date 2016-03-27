@@ -104,6 +104,7 @@ class Upload extends BackendBaseAJAXAction
 				$insert['modified'] = 'N';
 				$insert['type'] = BackendMediaModel::getAllAllowedTypeByMimetype($file_data['type']);
 				$insert['extension'] = $extension;
+				$insert['data'] = serialize(array());
 
 				if($insert['type'] == 'image'){
 
@@ -114,7 +115,7 @@ class Upload extends BackendBaseAJAXAction
 
 					list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-					$data = array('portrait' => ($width > $height) ? false: true);
+					$data['portrait'] = ($width > $height) ? false : true;
 					$insert['data'] = serialize($data);
 				}
 
