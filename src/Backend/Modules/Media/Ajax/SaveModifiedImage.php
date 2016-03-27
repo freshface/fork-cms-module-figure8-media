@@ -76,12 +76,8 @@ class SaveModifiedImage extends BackendBaseAJAXAction
                     'filename' => $new_filename
                 );
 
-
                 // generate preview file
-                $thumbnail = new \SpoonThumbnail($files_path . '/' . $new_filename , 400, 400, true);
-                $thumbnail->setAllowEnlargement(true);
-                $thumbnail->setForceOriginalAspectRatio(true);
-                $thumbnail->parseToFile($preview_files_path . '/' . $new_filename, 100);
+                BackendMediaHelper::generateThumbnail($new_filename, $files_path, $preview_files_path);
 
                 list($width, $height) = getimagesize($files_path . '/' . $new_filename);
 

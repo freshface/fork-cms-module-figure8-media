@@ -31,5 +31,13 @@ class Helper
             }
         }
     }
+
+    public static function generateThumbnail($filename, $source_path, $destination_path)
+    {
+        $thumbnail = new \SpoonThumbnail($source_path . '/' . $filename , 400, 400, true);
+        $thumbnail->setAllowEnlargement(true);
+        $thumbnail->setForceOriginalAspectRatio(true);
+        $thumbnail->parseToFile($destination_path . '/' . $filename, 100);
+    }
     
 }

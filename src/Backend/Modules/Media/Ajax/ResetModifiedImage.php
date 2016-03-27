@@ -60,12 +60,8 @@ class ResetModifiedImage extends BackendBaseAJAXAction
                 'filename' => $this->record['original_filename']
             );
 
-
             // generate preview file
-            $thumbnail = new \SpoonThumbnail($files_path . '/' . $this->record['original_filename'] , 400, 400, true);
-            $thumbnail->setAllowEnlargement(true);
-            $thumbnail->setForceOriginalAspectRatio(true);
-            $thumbnail->parseToFile($preview_files_path . '/' . $this->record['original_filename'], 100);
+            BackendMediaHelper::generateThumbnail($this->record['original_filename'], $files_path, $preview_files_path);
 
             list($width, $height) = getimagesize($files_path . '/' . $this->record['original_filename']);
 
@@ -74,8 +70,6 @@ class ResetModifiedImage extends BackendBaseAJAXAction
             $update['data'] = serialize($data);
 
             $success = BackendMediaModel::updateFile($update);
-            
-
 
             // output
             if ($success) {

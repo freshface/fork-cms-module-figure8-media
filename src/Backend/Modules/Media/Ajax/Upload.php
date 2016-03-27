@@ -6,6 +6,7 @@ use Backend\Core\Engine\Base\AjaxAction as BackendBaseAJAXAction;
 use Backend\Core\Engine\Model as BackendModel;
 use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
+use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
 
 use Common\Uri as CommonUri;
 
@@ -106,12 +107,9 @@ class Upload extends BackendBaseAJAXAction
 				$insert['extension'] = $extension;
 				$insert['data'] = serialize(array());
 
-				if($insert['type'] == 'image'){
-
-					$thumbnail = new \SpoonThumbnail($files_path . '/' . $filename , 400, 400, true);
-					$thumbnail->setAllowEnlargement(true);
-					$thumbnail->setForceOriginalAspectRatio(true);
-					$thumbnail->parseToFile($preview_files_path . '/' . $filename, 100);
+				if($insert['type'] == 'image')
+				{
+					BackendMediaHelper::generateThumbnail($filename, $files_path, $preview_files_path);
 
 					list($width, $height) = getimagesize($files_path . '/' . $filename);
 
