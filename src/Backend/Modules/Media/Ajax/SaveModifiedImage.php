@@ -67,7 +67,7 @@ class SaveModifiedImage extends BackendBaseAJAXAction
                 $fs->remove($preview_files_path . '/' . $this->record['filename']);
 
                 // remove generated files
-                BackendMediaHelper::removeGeneratedFiles($this->record['filename']);
+                BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
 
                 $update = array(
                     'id' => $id,

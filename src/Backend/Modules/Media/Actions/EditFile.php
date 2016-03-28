@@ -26,6 +26,7 @@ class EditFile extends BackendBaseActionEdit
         parent::execute();
 
         $this->id = $this->getParameter('id', 'int');
+        $this->filter = $this->getParameter('filter', 'string', '');
         
 
         // does the item exists
@@ -81,8 +82,6 @@ class EditFile extends BackendBaseActionEdit
             $language['formElements']['txtName'] = $this->frm->addText('name_'. $language['abbreviation'], isset($this->record['content'][$language['abbreviation']]['name']) ? $this->record['content'][$language['abbreviation']]['name'] : '', null, 'inputText title');
             $language['formElements']['txtText'] = $this->frm->addEditor('text_'. $language['abbreviation'], isset($this->record['content'][$language['abbreviation']]['text']) ? $this->record['content'][$language['abbreviation']]['text'] : '');
         }
-
-        
     }
 
 
@@ -95,6 +94,7 @@ class EditFile extends BackendBaseActionEdit
 
         $this->tpl->assign('languages', $this->languages);
         $this->tpl->assign('record', $this->record);
+        $this->tpl->assign('filter', $this->filter);
         $this->tpl->assign('allow_feather_edit', in_array(strtolower($this->record['extension']), array('jpg','png')));
 
         $timestamp = time();
@@ -105,8 +105,8 @@ class EditFile extends BackendBaseActionEdit
 
         $this->header->addJSData('media','id', $this->record['id']);
 
+        $feather_api_key = $this->get('fork.settings')->get($this->URL->getModule(), 'feather_api_key');
 
-        $feather_api_key = $this->get('fork.settings')->get($this->URL->getModule(), 'feather_api_key', 'your api key');
         $this->header->addJSData('media','feather_api_key', $feather_api_key);
         $this->tpl->assign('feather_api_key', $feather_api_key);
 
@@ -139,10 +139,10 @@ class EditFile extends BackendBaseActionEdit
 
                 BackendMediaModel::updateFile($item);
                 BackendMediaModel::updateFileContent($content, $item['id']);
-
+                /*
                 $this->redirect(
                     Model::createURLForAction('EditFile') . '&report=saved&id=' . $this->record['id'] 
-                );
+                );*/
              }
         }
 

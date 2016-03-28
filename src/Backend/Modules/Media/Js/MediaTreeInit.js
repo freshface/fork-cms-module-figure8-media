@@ -23,10 +23,12 @@ jsBackend.media.tree =
 
 			var selected = $(".media-items .media-item input[type='checkbox']:checked");
 
+
+
 			if (selected.length > 0) {
-			    $('media-items-actions').show();
+			    $('.media-items-actions').slideDown(100);
 			} else {
-				$('media-items-actions').hide();
+				$('.media-items-actions').slideUp(100);
 			}
 
 		})

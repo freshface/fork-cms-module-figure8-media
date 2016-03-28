@@ -3,21 +3,27 @@
 
 <div class="pageTitle">
     <h2>
-        {$lblUpload|ucfirst} {option:folder}{$lblIn} "{$folder.name}"{/option:folder}
+        {$lblImport|ucfirst} {option:folder}{$lblIn} "{$folder.name}"{/option:folder}
     </h2>
 </div>
 
     {option:folder}
-    <form>
+    {form:import}
         <div class="box">
             <div class="heading">
-                <h3>{$lblFiles|ucfirst}</h3>
+                <h3>{$lblFile|ucfirst}</h3>
             </div>
             <div class="content">
-                <div id="js-uploadify-queue"></div>
+               <p>
+                    <label for="source">{$lblSource|ucfirst}</label>
+                   {$ddmSource} {$ddmSourceError}
+               </p>
+
                 <p>
-                    <input id="js-uploadify" name="files" type="file" multiple="true">
-                </p>
+                    <label for="url">{$lblUrl|ucfirst}</label>
+                   {$txtUrl} {$txtUrlError}
+               </p>
+
             </div>
         </div>
         
@@ -27,11 +33,12 @@
                 </a>
             <div class="buttonHolderRight">
 
-               <a href="#" class="button mainButton js-upload-start">{$lblUpload|ucfirst} {$lblIn} "{$folder.name}"</a>
+               <a href="#" class="button mainButton submitButton">{$lblImport|ucfirst}  {$lblIn} "{$folder.name}"</a>
+
 
             </div>
         </div>
-    </form>
+     {/form:import}
     {/option:folder}
 
     {option:!folder}

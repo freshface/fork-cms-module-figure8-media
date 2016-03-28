@@ -22,7 +22,7 @@ use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
  * @author Frederik Heyninck <frederik@figure8.be>
  */
 
-class ReplaceFile extends BackendBaseAJAXAction
+class ReplacePosterImage extends BackendBaseAJAXAction
 {
 	/**
 	 * Execute the action

@@ -25,21 +25,28 @@ class Installer extends ModuleInstaller
         $this->importLocale(dirname(__FILE__) . '/Data/locale.xml');
 
         $this->setModuleRights(1, 'Media');
+        
+        $this->setActionRights(1, 'Media', 'AddFiles');
+        $this->setActionRights(1, 'Media', 'DeleteFile');
+        $this->setActionRights(1, 'Media', 'EditFile');
+        $this->setActionRights(1, 'Media', 'ImporttFile');
 
         $this->setActionRights(1, 'Media', 'Index');
-        $this->setActionRights(1, 'Media', 'AddFiles');
-        $this->setActionRights(1, 'Media', 'EditFile');
-        $this->setActionRights(1, 'Media', 'Delete');
-        $this->setActionRights(1, 'Media', 'Upload');
-        $this->setActionRights(1, 'Media', 'Delete');
+        $this->setActionRights(1, 'Media', 'IndexMassAction');
         $this->setActionRights(1, 'Media', 'Settings');
+
         $this->setActionRights(1, 'Media', 'Albums');
         $this->setActionRights(1, 'Media', 'EditAlbum');
         $this->setActionRights(1, 'Media', 'AddAlbum');
         $this->setActionRights(1, 'Media', 'DeleteAlbum');
+
+        $this->setActionRights(1, 'Media', 'CreateFolder');
         $this->setActionRights(1, 'Media', 'MoveFolder');
         $this->setActionRights(1, 'Media', 'RenameFolder');
         $this->setActionRights(1, 'Media', 'ReplaceFile');
+        $this->setActionRights(1, 'Media', 'ResetModifiedImage');
+        $this->setActionRights(1, 'Media', 'SaveModifiedImage');
+        $this->setActionRights(1, 'Media', 'Upload');
 
         $navigationModulesId = $this->setNavigation(null, 'Modules');
         $navigationModulesId = $this->setNavigation($navigationModulesId, 'Media', 'media/index');
@@ -47,7 +54,7 @@ class Installer extends ModuleInstaller
             $navigationModulesId,
             'Library',
             'media/index',
-            array('media/add_files','media/edit_file')
+            array('media/add_files','media/edit_file','media/import_file')
         );
 
         $this->setNavigation(

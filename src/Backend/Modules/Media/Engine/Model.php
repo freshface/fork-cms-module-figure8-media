@@ -139,13 +139,25 @@ class Model
         );
 
         $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-        
+        $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+        $poster_preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
+        $poster_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_FILES_FOLDER;
+
         $return['data'] = @unserialize($return['data']);
         $return['is_' . $return['type']] = true;
         $return['is_modified'] = $return['modified'] == 'Y';
         $return['file_url'] = $files_path . '/' . $return['filename'];
-        $return['preview_file_url'] = $preview_files_path . '/' . $return['filename'];
+        $return['poster_file_url'] = $poster_files_url . '/' . $return['poster_filename'];
+        $return['preview_file_url'] = $preview_files_url . '/' . $return['filename'];
+        $return['poster_preview_file_url'] = $poster_preview_files_url . '/' . $return['poster_filename'];
+        $return['is_imported'] = $return['imported'] == 'Y';
+
+        /*
+        if(isset($return['data']['source']))
+        {
+            $return['is_vimeo'] = $return['data']['source'] == 'vimeo';
+            $return['is_youtube'] = $return['data']['source'] == 'youtube';
+        }*/
         
          // data found
         $return['content'] = (array) $db->getRecords(
@@ -175,7 +187,7 @@ class Model
         $db = BackendModel::get('database');
 
         $parameters = array();
-        $query = 'SELECT i.*, UNIX_TIMESTAMP(i.edited_on) as edited_on, c.name FROM media_library AS i INNER JOIN media_library_content AS c ON c.media_id = i.id AND c.language = ?';
+        $query = 'SELECT i.*, UNIX_TIMESTAMP(i.edited_on) as edited_on, c.name FROM media_library AS i LEFT JOIN media_library_content AS c ON c.media_id = i.id AND c.language = ?';
         $parameters[] = Language::getWorkingLanguage();
 
         $query .= ' WHERE 1';
@@ -204,6 +216,8 @@ class Model
             $parameters[] = (string) '%' . $filter['search'] . '%';
         }
 
+        $query .= ' ORDER BY i.created_on DESC';
+
         $return = (array) $db->getRecords($query, $parameters);
 
          // no results?
@@ -212,15 +226,21 @@ class Model
         }
 
         $edit_url = BackendModel::createURLForAction('EditFile');
+        $index_url = BackendModel::createURLForAction('Index');
         $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-        $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+        $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+        $poster_preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
 
         foreach ($return as &$record){
             $record['data'] = @unserialize($record['data']);
-            $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
+            $record['edit_url'] = $edit_url . '&id=' . $record['id'] . '&filter=' . urlencode(http_build_query($filter));
             $record['is_' . $record['type']] = true;
             $record['file_url'] = $files_path . '/' . $record['filename'];
-            $record['preview_file_url'] = $preview_files_path . '/' . $record['filename'];
+            $record['preview_file_url'] = $preview_files_url . '/' . $record['filename'];
+            $record['poster_preview_file_url'] = $poster_preview_files_url . '/' . $record['poster_filename'];
+            $record['is_imported'] = $record['imported'] == 'Y';
+            
+            
         }
 
         return  $return;
@@ -321,4 +341,50 @@ class Model
 
         return $filename;
     }
+
+
+     public static function getPosterFilename($filename, $id = null)
+    {
+       $filename = (string) $filename;
+
+       $path_parts = pathinfo($filename);
+
+        // get db
+        $db = BackendModel::getContainer()->get('database');
+
+        // new item
+        if ($id === null) {
+            // already exists
+            if ((bool) $db->getVar(
+                'SELECT 1
+                 FROM media_library AS i
+                 WHERE i.poster_filename  = ?
+                 LIMIT 1',
+                array($filename)
+            )
+            ) {
+                $filename = BackendModel::addNumber($path_parts['filename']) . '.' . $path_parts['extension'];
+
+                return self::getFilename($filename);
+            }
+        } else {
+            // current category should be excluded
+            if ((bool) $db->getVar(
+                'SELECT 1
+                 FROM media_library AS i
+                 WHERE i.poster_filename = ? AND i.id != ?
+                 LIMIT 1',
+                array( $filename, $id)
+            )
+            ) {
+                $filename = BackendModel::addNumber($path_parts['filename']) . '.' . $path_parts['extension'];
+
+                return self::getFilename($filename, $id);
+            }
+        }
+
+        return $filename;
+    }
+
+
 }

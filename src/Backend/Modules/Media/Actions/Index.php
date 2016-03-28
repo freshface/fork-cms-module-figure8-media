@@ -82,7 +82,7 @@ class Index extends BackendBaseActionEdit
 
         $this->frm->addHidden('folder_id', $this->filter['folder_id']);
 
-        $this->frm_action = new BackendForm('action', Model::createURLForAction('IndexMassAction'), 'post');
+        $this->frm_action = new BackendForm('action', Model::createURLForAction('IndexMassAction'), 'get');
         $actions = array();
         $actions['delete'] = ucfirst(Language::getLabel('Delete'));
         $this->frm_action->addDropdown('actions', $actions)->setDefaultElement('','');
@@ -126,6 +126,7 @@ class Index extends BackendBaseActionEdit
         $this->filter['type'] = $this->getParameter('type', 'string');
         $this->filter['search'] = $this->getParameter('search', 'string');
         $this->filter['view'] = $this->getParameter('view', 'string', 'grid');
+        $this->filter['form'] = $this->getParameter('form', 'string');
     }
 
 }

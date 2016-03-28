@@ -34,6 +34,11 @@
 				<translation language="en"><![CDATA[all media]]></translation>
 			</item>
 
+			<item type="label" name="Url">
+				<translation language="nl"><![CDATA[link]]></translation>
+				<translation language="en"><![CDATA[link]]></translation>
+			</item>
+
 			<item type="label" name="Documents">
 				<translation language="nl"><![CDATA[documenten]]></translation>
 				<translation language="en"><![CDATA[documents]]></translation>
@@ -53,6 +58,11 @@
 				<translation language="en"><![CDATA[audio]]></translation>
 			</item>
 
+			<item type="label" name="ImportFile">
+				<translation language="nl"><![CDATA[importeer]]></translation>
+				<translation language="en"><![CDATA[import]]></translation>
+			</item>
+
 			<item type="label" name="SelectFolder">
 				<translation language="nl"><![CDATA[kies een map]]></translation>
 				<translation language="en"><![CDATA[select folder]]></translation>
@@ -67,9 +77,29 @@
 				<translation language="en"><![CDATA[The image is saved.]]></translation>
 			</item>
 
+			<item type="message" name="SelectAnAction">
+				<translation language="nl"><![CDATA[Kies een actie:]]></translation>
+				<translation language="en"><![CDATA[Select an action:]]></translation>
+			</item>
+
 			<item type="message" name="NoResults">
 				<translation language="nl"><![CDATA[Er zijn geen resultaten.]]></translation>
 				<translation language="en"><![CDATA[No results found.]]></translation>
+			</item>
+
+			<item type="message" name="Imported">
+				<translation language="nl"><![CDATA[De media is geimporteerd.]]></translation>
+				<translation language="en"><![CDATA[The media was imported.]]></translation>
+			</item>
+
+			<item type="message" name="NoActionSelected">
+				<translation language="nl"><![CDATA[Er is geen actie geselecteerd.]]></translation>
+				<translation language="en"><![CDATA[No action was selected.]]></translation>
+			</item>
+
+			<item type="error" name="NoFilesSelected">
+				<translation language="nl"><![CDATA[Er zijn geen bestanden geselecteerd.]]></translation>
+				<translation language="en"><![CDATA[No files are selected.]]></translation>
 			</item>
 
 

@@ -6,8 +6,13 @@
         {$lblMedia|ucfirst}
     </h2>
     <div class="buttonHolderRight">
+        
         <a href="{$var|geturl:'AddFiles'}{option:folder}&amp;folder_id={$folder.id}{/option:folder}" class="button icon iconAdd" title="{$lblUpload|ucfirst}">
             <span>{$lblUpload|ucfirst}</span>
+        </a>
+
+         <a href="{$var|geturl:'ImportFile'}{option:folder}&amp;folder_id={$folder.id}{/option:folder}" class="button icon iconAdd" title="{$lblImportFile|ucfirst}">
+            <span>{$lblImportFile|ucfirst}</span>
         </a>
     </div>
 </div>
@@ -80,7 +85,7 @@
                             <div class="media-items cf">
                             {iteration:library}
 
-                                <div class="media-item media-item-type-{$library.type}" data-id="{$library.id}">
+                                <div class="media-item" data-id="{$library.id}">
                                     <label for="ids{$library.id}">
                                     <div class="media-item-inner cf">
                                         
@@ -91,8 +96,8 @@
                                             <div class="media-item-hover-inner">
                                                 <div class="media-item-hover-meta">
                                                     <p>
-                                                        <strong>{$library.name}</strong> <br>
-                                                        Filename: {$library.original_filename} <br>
+                                                        {option:library.name}<strong>{$library.name}</strong> <br>{/option:library.name}
+                                                        {option:library.filenname}Filename: {$library.original_filename} <br>{/option:library.filenname}
                                                         Type: {$library.type} <br>
                                                         Last modified: {$library.edited_on|date:'d-m-Y H:i:s'} 
                                                     </p>
@@ -103,15 +108,27 @@
                                         <div class="media-item-media">
                                             <div class="media-item-preview">
                                                 
-                                                    {option:library.is_image}<img src="{$library.preview_file_url}" alt="">{/option:library.is_image}
-                                                    {option:library.is_file}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_file}
-                                                    {option:library.is_audio}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_audio}
-                                                    {option:library.is_video}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_video}
+                                                {option:library.is_image}<img src="{$library.preview_file_url}" alt="">{/option:library.is_image}
+                                                {option:library.is_file}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_file}
+                                                {option:library.is_audio}<div class="media-item-extension">.{$library.extension}</div>{/option:library.is_audio}
+                                                {option:library.is_video}
+                                                     {option:!library.is_imported}<div class="media-item-extension">.{$library.extension}</div>{/option:!library.is_imported}
+                                                      {option:library.is_imported}<img src="{$library.poster_preview_file_url}" alt="">{/option:library.is_imported}
+                                                {/option:library.is_video}
                                                 
                                             </div>
                                         </div>
 
                                         <div class="media-item-footer">
+
+                                            {option:library.is_video}
+                                                {option:library.is_imported}
+                                                    {option:library.data.is_youtube}<i class="fa fa-youtube"></i>{/option:library.data.is_youtube}
+                                                    {option:library.data.is_vimeo}<i class="fa fa-vimeo"></i>{/option:library.data.is_vimeo}
+                                                {/option:library.is_imported}
+                                                 {option:!library.is_imported}
+                                                {/option:!library.is_imported}
+                                            {/option:library.is_video}
                                             {$library.name}
                                         </div>
                                     </div>
@@ -123,10 +140,11 @@
                         {/option:library}
 
                         {option:!library}
-
+                            <div class="extra-padding">
                             <p>
                                 {$msgNoResults}
                             </p>
+                            </div>
 
                         {/option:!library}
                     </div>
