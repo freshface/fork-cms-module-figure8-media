@@ -72,5 +72,5 @@ UPGRADE_3.11.md
 UPGRADE_3.10.md
 
 
-!src/Backend/Modules/MediaBase
+!src/Fronten/Modules/Media
 !src/Backend/Modules/Media
