@@ -13,7 +13,6 @@ use Backend\Core\Engine\Language;
  */
 class TreeModel
 {
-
     public static function getFolderMaximumSequence()
     {
         return (int) BackendModel::get('database')->getVar(
@@ -51,19 +50,18 @@ class TreeModel
 
     public static function createFolder($data)
     {
-         return (int) BackendModel::get('database')->insert('media_folders', array($data));
+        return (int) BackendModel::get('database')->insert('media_folders', array($data));
     }
 
     public static function folderArrayToFlatArray()
     {
-       $array = self::getFolderArray();
-       $return = array();
+        $array = self::getFolderArray();
+        $return = array();
 
-       foreach($array as $item){
-       
+        foreach ($array as $item) {
             $return[$item['id']] = $item['parent_id'];
             $return[$item['id']] = array('name' => $item['name'], 'parent_id' => $item['parent_id'], 'id' => $item['id']);
-       }
+        }
 
         return $return;
     }
@@ -77,9 +75,8 @@ class TreeModel
 
 
     public static function getFolderTreeHTML()
-    { 
-         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl')) {
-
+    {
+        if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-ul.tpl')) {
             $value = self::folderArrayTreeToList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
             $fs = new Filesystem();
             $fs->dumpFile(
@@ -92,9 +89,8 @@ class TreeModel
     }
 
     public static function getFolderTreeForDropdown()
-    { 
-         if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl')) {
-
+    {
+        if (!is_file(BACKEND_CACHE_PATH . '/Media/tree-dropdown.tpl')) {
             $value = self::folderArrayTreeToDropdownList(self::flatFolderArrayToArrayTree(self::folderArrayToFlatArray()));
             $fs = new Filesystem();
             $fs->dumpFile(
@@ -107,12 +103,12 @@ class TreeModel
     }
 
     public static function folderArrayTreeToDropdownList($tree, $depth = 0, $return = array())
-    {       
-
-        foreach($tree as $node) {
-
+    {
+        foreach ($tree as $node) {
             $return[$node['id']] = str_repeat('--', $depth) . ' ' . $node['name'];
-            if(isset($node['children'])) return self::folderArrayTreeToDropdownList($node['children'], $depth+1, $return);
+            if (isset($node['children'])) {
+                return self::folderArrayTreeToDropdownList($node['children'], $depth+1, $return);
+            }
         }
         
         return $return;
@@ -120,15 +116,17 @@ class TreeModel
 
 
     public static function folderArrayTreeToList($tree)
-    {       
+    {
         $return = '<ul>';
 
-        foreach($tree as $node) {
+        foreach ($tree as $node) {
             $return .= '<li>';
             $return .= '<a  href="#" data-id="' . $node['id'] .'">';
             $return .= $node['name'];
-             $return .= '</a>';
-                if(isset($node['children'])) $return .= self::folderArrayTreeToList($node['children']);
+            $return .= '</a>';
+            if (isset($node['children'])) {
+                $return .= self::folderArrayTreeToList($node['children']);
+            }
             $return .= '</li>';
         }
 
@@ -165,7 +163,7 @@ class TreeModel
             array((int) $parent), 'id'
         );
 
-        foreach($result as $row){
+        foreach ($result as $row) {
             $return[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'], 'name' => $row['name']);
             $return = self::getFolderArray($row['id'], $return);
         }

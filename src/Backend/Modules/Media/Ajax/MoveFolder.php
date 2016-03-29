@@ -34,8 +34,7 @@ class MoveFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            
-             $data = array(
+            $data = array(
                 'id' => $id,
                 'dropped_on' => $dropped_on
             );
@@ -45,12 +44,11 @@ class MoveFolder extends BackendBaseAJAXAction
             $ids = explode(',', $ids);
             $sequence = 1;
             foreach ($ids as $id) {
-
                 $data = array();
                 $data['id'] = $id;
                 $data['sequence'] = $sequence;
                 BackendMediaTreeModel::updateFolder($data);
-                $sequence++; 
+                $sequence++;
             }
 
             // build cache

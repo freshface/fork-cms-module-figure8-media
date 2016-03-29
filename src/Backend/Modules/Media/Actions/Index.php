@@ -85,23 +85,22 @@ class Index extends BackendBaseActionEdit
         $this->frm_action = new BackendForm('action', Model::createURLForAction('IndexMassAction'), 'get');
         $actions = array();
         $actions['delete'] = ucfirst(Language::getLabel('Delete'));
-        $this->frm_action->addDropdown('actions', $actions)->setDefaultElement('','');
+        $this->frm_action->addDropdown('actions', $actions)->setDefaultElement('', '');
         //$this->frm_action->addMultiCheckbox('ids');
-       
     }
 
     private function validateForm()
     {
         // is the form submitted?
         if ($this->frm->isSubmitted()) {
-             if ($this->frm->isCorrect()) {
-             }
+            if ($this->frm->isCorrect()) {
+            }
         }
 
         // is the form submitted?
         if ($this->frm_action->isSubmitted()) {
-             if ($this->frm_action->isCorrect()) {
-             }
+            if ($this->frm_action->isCorrect()) {
+            }
         }
     }
 
@@ -110,13 +109,13 @@ class Index extends BackendBaseActionEdit
      * Parse the page
      */
     protected function parse()
-    {   
+    {
         parent::parse();
         $this->frm_action->parse($this->tpl);
         $this->tpl->assign("library", $this->library);
         $this->tpl->assign("folder", $this->folder);
         $this->tpl->assign("tree", $this->tree);
-        $this->header->addJSData('media','folder_id', $this->folder_id);
+        $this->header->addJSData('media', 'folder_id', $this->folder_id);
     }
 
     private function setFilter()
@@ -128,5 +127,4 @@ class Index extends BackendBaseActionEdit
         $this->filter['view'] = $this->getParameter('view', 'string', 'grid');
         $this->filter['form'] = $this->getParameter('form', 'string');
     }
-
 }

@@ -2,7 +2,6 @@
 
 namespace Backend\Modules\Media\Actions;
 
-
 use Backend\Core\Engine\Base\ActionEdit as BackendBaseActionEdit;
 use Backend\Core\Engine\Authentication as BackendAuthentication;
 use Backend\Core\Engine\Model as BackendModel;
@@ -14,7 +13,6 @@ use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 
 class Settings extends BackendBaseActionEdit
 {
-
     private $dgResolutions;
 
     /**
@@ -39,7 +37,6 @@ class Settings extends BackendBaseActionEdit
         $this->frm = new BackendForm('settings');
 
         $this->frm->addText('feather_api_key',  $this->get('fork.settings')->get($this->URL->getModule(), 'feather_api_key'), null, 'inputText input-wide', 'inputTextError input-wide');
-
     }
 
     /**
@@ -50,10 +47,9 @@ class Settings extends BackendBaseActionEdit
         parent::parse();
         $this->loadDataGridResolutions();
         $this->tpl->assign('dgResolutions', (string) $this->dgResolutions->getContent());
-
     }
 
-     private function loadDataGridResolutions()
+    private function loadDataGridResolutions()
     {
         $this->dgResolutions = new BackendDataGridDB(
             BackendMediaModel::QRY_DATAGRID_BROWSE_RESOLUTIONS,
@@ -78,7 +74,6 @@ class Settings extends BackendBaseActionEdit
     private function validateForm()
     {
         if ($this->frm->isSubmitted()) {
-
             if ($this->frm->isCorrect()) {
                 
                 // set our settings

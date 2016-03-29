@@ -7,12 +7,9 @@ use Backend\Core\Engine\Model as BackendModel;
 use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
-
 use Common\Uri as CommonUri;
-
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
-
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 /**
@@ -23,122 +20,109 @@ use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 class Upload extends BackendBaseAJAXAction
 {
-	/**
-	 * Execute the action
-	 */
-	public function execute()
-	{
-		// call parent, this will probably add some general CSS/JS or other required files
-		parent::execute();
+    /**
+     * Execute the action
+     */
+    public function execute()
+    {
+        // call parent, this will probably add some general CSS/JS or other required files
+        parent::execute();
 
-		$verify_token =  md5(\SpoonFilter::getPostValue('timestamp', null, '', 'string'));
-		$token = \SpoonFilter::getPostValue('token', null, '', 'string');
-		$this->folder_id = \SpoonFilter::getPostValue('folder_id', null, '', 'int');
-		$this->languages = BackendMediaModel::getAllLanguages();
+        $verify_token =  md5(\SpoonFilter::getPostValue('timestamp', null, '', 'string'));
+        $token = \SpoonFilter::getPostValue('token', null, '', 'string');
+        $this->folder_id = \SpoonFilter::getPostValue('folder_id', null, '', 'int');
+        $this->languages = BackendMediaModel::getAllLanguages();
 
-		if(!empty($_FILES))
-		{
-			if ($token == $verify_token)
-			{	
-				ini_set('memory_limit', -1);
-			
-				// Upload
-				self::upload($_FILES);
+        if (!empty($_FILES)) {
+            if ($token == $verify_token) {
+                ini_set('memory_limit', -1);
+            
+                // Upload
+                self::upload($_FILES);
 
-				ini_restore('memory_limit');
+                ini_restore('memory_limit');
 
-				$this->output(self::OK, null, '1');
-			}
-			else
-			{
-				$this->output(self::ERROR, null, 'invalid token');
-			}
-		}
-		else
-		{
-			$this->output(self::ERROR, null, 'no files selected');
-		}
-	}
+                $this->output(self::OK, null, '1');
+            } else {
+                $this->output(self::ERROR, null, 'invalid token');
+            }
+        } else {
+            $this->output(self::ERROR, null, 'no files selected');
+        }
+    }
 
-	/**
-	 * Validate the image
-	 *
-	 * @param string $field The name of the field
-	 * @param int $set_idThe id of the set
-	 */
-	private function upload($file)
-	{
-		$file_data = $file['Filedata'];
+    /**
+     * Validate the image
+     *
+     * @param string $field The name of the field
+     * @param int $set_idThe id of the set
+     */
+    private function upload($file)
+    {
+        $file_data = $file['Filedata'];
 
-		if($file_data)
-		{
-			$file_parts = pathinfo($file_data['name']);
-			$temp_file   = $file_data['tmp_name'];
+        if ($file_data) {
+            $file_parts = pathinfo($file_data['name']);
+            $temp_file   = $file_data['tmp_name'];
 
-			$extension = $file_parts['extension'];
-			$original_filename = $file_parts['filename'];
+            $extension = $file_parts['extension'];
+            $original_filename = $file_parts['filename'];
 
-			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypes(); // Allowed file types
+            $allowed_types = BackendMediaModel::getAllAllowedFileMimetypes(); // Allowed file types
 
-			if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0)
-			{
-				// Generate a unique filename
-				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . strtolower($extension));
+            if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0) {
+                // Generate a unique filename
+                $filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . strtolower($extension));
 
-				// path to folder
-				$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-				$preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-				
-				$fs = new Filesystem();
-				$fs->mkdir($files_path, 0775);
-				$fs->mkdir($preview_files_path, 0775);
+                // path to folder
+                $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+                $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+                
+                $fs = new Filesystem();
+                $fs->mkdir($files_path, 0775);
+                $fs->mkdir($preview_files_path, 0775);
 
-				// Move the file
-				move_uploaded_file($temp_file, $files_path . '/' . $filename);
-				chmod($files_path . '/' . $filename, 0775);
+                // Move the file
+                move_uploaded_file($temp_file, $files_path . '/' . $filename);
+                chmod($files_path . '/' . $filename, 0775);
 
-				$insert['filename'] = $filename;
-				$insert['original_filename'] = $filename;
-				$insert['folder_id'] = $this->folder_id;
-				$insert['created_on'] = BackendModel::getUTCDate();
-				$insert['edited_on'] = BackendModel::getUTCDate();
-				$insert['modified'] = 'N';
-				$insert['type'] = BackendMediaModel::getAllAllowedTypeByMimetype($file_data['type']);
-				$insert['extension'] = $extension;
-				$insert['data'] = serialize(array());
+                $insert['filename'] = $filename;
+                $insert['original_filename'] = $filename;
+                $insert['folder_id'] = $this->folder_id;
+                $insert['created_on'] = BackendModel::getUTCDate();
+                $insert['edited_on'] = BackendModel::getUTCDate();
+                $insert['modified'] = 'N';
+                $insert['type'] = BackendMediaModel::getAllAllowedTypeByMimetype($file_data['type']);
+                $insert['extension'] = $extension;
+                $insert['data'] = serialize(array());
 
-				if($insert['type'] == 'image')
-				{
-					BackendMediaHelper::generateThumbnail($filename, $files_path, $preview_files_path);
+                if ($insert['type'] == 'image') {
+                    BackendMediaHelper::generateThumbnail($filename, $files_path, $preview_files_path);
 
-					list($width, $height) = getimagesize($files_path . '/' . $filename);
+                    list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-					$data['portrait'] = ($width > $height) ? false : true;
-					$insert['data'] = serialize($data);
-				}
+                    $data['portrait'] = ($width > $height) ? false : true;
+                    $insert['data'] = serialize($data);
+                }
 
-				$insert['id'] = BackendMediaModel::insertFile($insert);
+                $insert['id'] = BackendMediaModel::insertFile($insert);
 
-				// content
-				$content = array();
-                foreach($this->languages as $language)
-                {
+                // content
+                $content = array();
+                foreach ($this->languages as $language) {
                     $specific['media_id'] = $insert['id'];
                     $specific['language'] = $language['abbreviation'];
-                    $specific['name'] = str_replace(array('-','_'), array(' ', ' '), $file_parts['filename']);
+                    $specific['name'] = str_replace(array('-', '_'), array(' ', ' '), $file_parts['filename']);
                     $specific['text'] = '';
                     $content[$language['abbreviation']] = $specific;
                 }
 
-                 BackendMediaModel::insertFileContent($content);
-				
-			}
-			else
-			{
-				echo 'Invalid file type.';
-				exit;
-				//$this->output(self::ERROR, null, 'Invalid file type.');
-			}
-		}
-	}
+                BackendMediaModel::insertFileContent($content);
+            } else {
+                echo 'Invalid file type.';
+                exit;
+                //$this->output(self::ERROR, null, 'Invalid file type.');
+            }
+        }
+    }
 }

@@ -7,7 +7,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Finder\Finder;
 use Backend\Core\Engine\Language;
-
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 /**
@@ -42,8 +41,7 @@ class Helper
             parse_str($parts['query'], $qs);
             if (isset($qs['v'])) {
                 return $qs['v'];
-            }
-            else if (isset($qs['vi'])) {
+            } elseif (isset($qs['vi'])) {
                 return $qs['vi'];
             }
         }
@@ -69,10 +67,9 @@ class Helper
 
     public static function generateThumbnail($filename, $source_path, $destination_path)
     {
-        $thumbnail = new \SpoonThumbnail($source_path . '/' . $filename , 400, 400, true);
+        $thumbnail = new \SpoonThumbnail($source_path . '/' . $filename, 400, 400, true);
         $thumbnail->setAllowEnlargement(true);
         $thumbnail->setForceOriginalAspectRatio(true);
         $thumbnail->parseToFile($destination_path . '/' . $filename, 100);
     }
-    
 }

@@ -5,7 +5,6 @@ namespace Backend\Modules\Media\Engine;
 use Backend\Core\Engine\Model as BackendModel;
 use Symfony\Component\Filesystem\Filesystem;
 use Backend\Core\Engine\Language;
-
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 
 /**
@@ -15,7 +14,6 @@ use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
  */
 class Model
 {
-
     const QRY_DATAGRID_BROWSE_RESOLUTIONS =
         'SELECT i.width, i.height, i.id
          FROM media_resolutions AS i';
@@ -24,21 +22,21 @@ class Model
     {
         $languages = array();
 
-        foreach(Language::getActiveLanguages() as $abbreviation) {
+        foreach (Language::getActiveLanguages() as $abbreviation) {
             $languages[] = array('abbreviation' => $abbreviation, 'label' => Language::getLabel(mb_strtoupper($abbreviation)));
         }
 
         return $languages;
     }
 
-     public static function getAllLanguages()
+    public static function getAllLanguages()
     {
         $all_languages = 'a:13:{i:0;s:2:"en";i:1;s:2:"zh";i:2;s:2:"nl";i:3;s:2:"fr";i:4;s:2:"de";i:5;s:2:"el";i:6;s:2:"hu";i:7;s:2:"it";i:8;s:2:"lt";i:9;s:2:"ru";i:10;s:2:"es";i:11;s:2:"sv";i:12;s:2:"uk";}';
 
         $all_languages = unserialize($all_languages);
         $languages = array();
 
-        foreach($all_languages as $abbreviation) {
+        foreach ($all_languages as $abbreviation) {
             $languages[] = array('abbreviation' => $abbreviation, 'label' => Language::getLabel(mb_strtoupper($abbreviation)));
         }
 
@@ -89,7 +87,7 @@ class Model
 
         return implode(',', $types);
     }
-     public static function getAllAllowedFileTypesForJavascriptByType($type)
+    public static function getAllAllowedFileTypesForJavascriptByType($type)
     {
         $types = (array) BackendModel::get('database')->getColumn(
             'SELECT i.mimetype
@@ -101,16 +99,16 @@ class Model
 
     public static function insertFile($data)
     {
-         return (int) BackendModel::get('database')->insert('media_library', array($data));
+        return (int) BackendModel::get('database')->insert('media_library', array($data));
     }
 
     public static function updateFile($data)
     {
-       BackendModel::get('database')->update(
+        BackendModel::get('database')->update(
             'media_library', $data, 'id = ?', (int) $data['id']
         );
 
-       return true;
+        return true;
     }
 
     public static function deleteFile($id)
@@ -181,8 +179,7 @@ class Model
     public static function updateFileContent(array $content, $id)
     {
         $db = BackendModel::get('database');
-        foreach($content as $language => $row)
-        {
+        foreach ($content as $language => $row) {
             $db->update('media_library_content', $row, 'media_id = ? AND language = ?', array($id, $language));
         }
     }
@@ -197,20 +194,17 @@ class Model
 
         $query .= ' WHERE 1';
 
-        if($filter['folder_id'] !== null)
-        {
+        if ($filter['folder_id'] !== null) {
             $query .= ' AND i.folder_id = ?';
             $parameters[] = (int) $filter['folder_id'];
         }
 
-        if($filter['type'] !== null)
-        {
+        if ($filter['type'] !== null) {
             $query .= ' AND i.type = ?';
             $parameters[] = (string) $filter['type'];
         }
 
-        if($filter['search'] !== null)
-        {
+        if ($filter['search'] !== null) {
             $query .= ' AND (i.original_filename LIKE ?';
             $parameters[] = (string) '%' . $filter['search'] . '%';
 
@@ -236,7 +230,7 @@ class Model
         $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
         $poster_preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
 
-        foreach ($return as &$record){
+        foreach ($return as &$record) {
             $record['data'] = @unserialize($record['data']);
             $record['edit_url'] = $edit_url . '&id=' . $record['id'] . '&filter=' . urlencode(http_build_query($filter));
             $record['is_' . $record['type']] = true;
@@ -244,8 +238,6 @@ class Model
             $record['preview_file_url'] = $preview_files_url . '/' . $record['filename'];
             $record['poster_preview_file_url'] = $poster_preview_files_url . '/' . $record['poster_filename'];
             $record['is_imported'] = $record['imported'] == 'Y';
-            
-            
         }
 
         return  $return;
@@ -267,7 +259,7 @@ class Model
         $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
         $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
-        foreach ($return as &$record){
+        foreach ($return as &$record) {
             $record['data'] = @unserialize($record['data']);
             $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
             $record['is_' . $record['type']] = true;
@@ -293,7 +285,7 @@ class Model
         $files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
         $preview_files_path = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
-        foreach ($return as &$record){
+        foreach ($return as &$record) {
             $record['data'] = @unserialize($record['data']);
             $record['edit_url'] = $edit_url . '/&id=' . $record['id'];
             $record['is_' . $record['type']] = true;
@@ -306,9 +298,9 @@ class Model
 
     public static function getFilename($filename, $id = null)
     {
-       $filename = (string) $filename;
+        $filename = (string) $filename;
 
-       $path_parts = pathinfo($filename);
+        $path_parts = pathinfo($filename);
 
         // get db
         $db = BackendModel::getContainer()->get('database');
@@ -348,11 +340,11 @@ class Model
     }
 
 
-     public static function getPosterFilename($filename, $id = null)
+    public static function getPosterFilename($filename, $id = null)
     {
-       $filename = (string) $filename;
+        $filename = (string) $filename;
 
-       $path_parts = pathinfo($filename);
+        $path_parts = pathinfo($filename);
 
         // get db
         $db = BackendModel::getContainer()->get('database');
@@ -390,6 +382,4 @@ class Model
 
         return $filename;
     }
-
-
 }
