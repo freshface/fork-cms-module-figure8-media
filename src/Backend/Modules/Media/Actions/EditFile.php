@@ -36,8 +36,10 @@ class EditFile extends BackendBaseActionEdit
              // add js
             $this->header->addJS('jquery.uploadifive.js');
             $this->header->addJS('MediaUploaderReplaceInit.js', null, false);
+            $this->header->addJS('MediaUploaderReplacePosterInit.js', null, false);
             $this->header->addJS('http://feather.aviary.com/imaging/v3/editor.js', null, false, true, false);
             $this->header->addJS('MediaEditFileInit.js', null, false);
+             $this->header->addJS('MediaEditPosterFileInit.js', null, false);
 
             $this->header->addJS(FrontendMediaHelper::VIDEOJS_JS, null, false, true, false);
             $this->header->addCSS(FrontendMediaHelper::VIDEOJS_CSS, null, true, false, false);
@@ -64,6 +66,7 @@ class EditFile extends BackendBaseActionEdit
         $this->languages = BackendMediaModel::getActiveLanguages();
         $this->record = BackendMediaModel::getFile($this->id);
         $this->allowed_file_types = BackendMediaModel::getAllAllowedFileTypesForJavascriptByType($this->record['type']);
+        $this->allowed_poster_file_types = BackendMediaModel::getAllAllowedFileTypesForJavascriptByType('image');
     }
 
     /**
@@ -96,12 +99,15 @@ class EditFile extends BackendBaseActionEdit
         $this->tpl->assign('record', $this->record);
         $this->tpl->assign('filter', $this->filter);
         $this->tpl->assign('allow_feather_edit', in_array(strtolower($this->record['extension']), array('jpg','png')));
+        $this->tpl->assign('allow_poster_feather_edit', in_array(strtolower($this->record['poster_extension']), array('jpg','png')));
+
 
         $timestamp = time();
 
         $this->header->addJSData('media','upload_timestamp', $timestamp);
         $this->header->addJSData('media','upload_token', md5($timestamp));
         $this->header->addJSData('media','allowed_file_types', $this->allowed_file_types);
+        $this->header->addJSData('media','allowed_poster_file_types', $this->allowed_poster_file_types);
 
         $this->header->addJSData('media','id', $this->record['id']);
 

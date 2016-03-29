@@ -11,7 +11,7 @@ use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
-class ResetModifiedImage extends BackendBaseAJAXAction
+class ResetModifiedPosterImage extends BackendBaseAJAXAction
 {
     /**
      * Execute the action
@@ -38,41 +38,42 @@ class ResetModifiedImage extends BackendBaseAJAXAction
         } else {
 
             $this->record = BackendMediaModel::getFile($id);
-            $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
+            $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_FILES_FOLDER;
 
-            $path_parts_filename = pathinfo($this->record['original_filename']);
-  
-            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-            $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+            $path_parts_filename = pathinfo($this->record['poster_original_filename']);
+
+
+            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
+            $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
 
             // remove  files
             $fs = new Filesystem();
-            if($this->record['filename']) $fs->remove($files_path . '/' . $this->record['filename']);
-            if($this->record['filename']) $fs->remove($preview_files_path . '/' . $this->record['filename']);
+            if($this->record['poster_filename']) $fs->remove($files_path . '/' . $this->record['poster_filename']);
+            if($this->record['poster_filename']) $fs->remove($preview_files_path . '/' . $this->record['poster_filename']);
 
             // remove generated files
-            BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
+            BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['poster_filename']);
 
             $update = array(
                 'id' => $id,
                 'modified' => 'N',
-                'extension' => $path_parts_filename['extension'],
-                'filename' => $this->record['original_filename']
+                'poster_extension' => $path_parts_filename['extension'],
+                'poster_filename' => $this->record['poster_original_filename']
             );
 
             // generate preview file
-            BackendMediaHelper::generateThumbnail($this->record['original_filename'], $files_path, $preview_files_path);
+            BackendMediaHelper::generateThumbnail($this->record['poster_original_filename'], $files_path, $preview_files_path);
 
-            list($width, $height) = getimagesize($files_path . '/' . $this->record['original_filename']);
+            list($width, $height) = getimagesize($files_path . '/' . $this->record['poster_original_filename']);
 
-            $this->record['data']['portrait'] = ($width > $height) ? false : true;
+            $this->record['data']['poster_portrait'] = ($width > $height) ? false : true;
             $update['data'] = serialize($this->record['data']);
 
             $success = BackendMediaModel::updateFile($update);
 
             // output
             if ($success) {
-                $this->output(self::OK, array('preview_file_url' => $preview_files_url . '/' . $this->record['original_filename']), 'image saved');
+                $this->output(self::OK, array('preview_file_url' => $preview_files_url . '/' . $this->record['poster_original_filename']), 'image saved');
             } else {
                 $this->output(self::ERROR, null, 'image not saved');
             }

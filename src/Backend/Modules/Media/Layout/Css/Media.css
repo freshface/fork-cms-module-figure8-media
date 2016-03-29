@@ -287,7 +287,9 @@ body.media-items-container-list .media-item.selected .media-item-inner {
 }
 
 #js-uploadify-queue .uploadifive-queue-item:last-child,
-#js-uploadify-queue:empty {
+#js-uploadify-queue:empty,
+#js-uploadify-poster-queue .uploadifive-queue-item:last-child,
+#js-uploadify-poster-queue:empty {
 	margin-bottom: 12px;
 }
 

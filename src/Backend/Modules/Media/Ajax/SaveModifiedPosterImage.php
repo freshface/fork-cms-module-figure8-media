@@ -11,7 +11,7 @@ use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
-class SaveModifiedImage extends BackendBaseAJAXAction
+class SaveModifiedPosterImage extends BackendBaseAJAXAction
 {
     /**
      * Execute the action
@@ -59,21 +59,21 @@ class SaveModifiedImage extends BackendBaseAJAXAction
             if($downloaded)
             {
                 
-                $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-                $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+                $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
+                $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
 
                 // remove preview file
                 $fs = new Filesystem();
-                if($this->record['filename']) $fs->remove($preview_files_path . '/' . $this->record['filename']);
+                if($this->record['poster_filename']) $fs->remove($preview_files_path . '/' . $this->record['poster_filename']);
 
                 // remove generated files
-                BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
+                BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['poster_filename']);
 
                 $update = array(
                     'id' => $id,
-                    'modified' => 'Y',
-                    'extension' => $extension,
-                    'filename' => $new_filename
+                    'poster_modified' => 'Y',
+                    'poster_extension' => $extension,
+                    'poster_filename' => $new_filename
                 );
 
                 // generate preview file
@@ -81,7 +81,7 @@ class SaveModifiedImage extends BackendBaseAJAXAction
 
                 list($width, $height) = getimagesize($files_path . '/' . $new_filename);
 
-                $this->record['data']['portrait'] = ($width > $height) ? false : true;
+                $this->record['data']['poster_portrait'] = ($width > $height) ? false : true;
                 $update['data'] = serialize($this->record['data']);
 
                 $success = BackendMediaModel::updateFile($update);

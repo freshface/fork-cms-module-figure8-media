@@ -119,12 +119,11 @@ class ImportFile extends BackendBaseActionEdit
                             $insert['poster_filename'] = $filename;
                             $insert['poster_original_filename'] = $filename;
                             $insert['poster_extension']  = 'jpg';
-
                             BackendMediaHelper::generateThumbnail($filename, $files_path, $preview_files_path);
 
                             list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-                            $data['portrait'] = ($width > $height) ? false : true;
+                            $data['poster_portrait'] = ($width > $height) ? false : true;
 
                         } 
                         
@@ -183,7 +182,7 @@ class ImportFile extends BackendBaseActionEdit
 
                                 list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-                                $data['portrait'] = ($width > $height) ? false : true;
+                                $data['poster_portrait'] = ($width > $height) ? false : true;
 
                             } 
                         }

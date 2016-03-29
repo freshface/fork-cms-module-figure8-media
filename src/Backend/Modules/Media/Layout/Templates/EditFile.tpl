@@ -61,6 +61,15 @@
 	                </p>
 				</div>
 
+                <div id="replacePosterFileDialog" class="forkForms" title="{option:record.poster_filename}{$lblReplaceFile|ucfirst}{/option:record.poster_filename}{option:!record.poster_filename}{$lblUpload|ucfirst}{/option:!record.poster_filename}" style="display: none;">
+                    <div id="js-uploadify-poster-queue"></div>
+                    <p>
+                        <input id="js-uploadify-poster" name="files" type="file" multiple="true">
+                    </p>
+                </div>
+
+
+
                 {option:record.is_image}
                 <div class="box">
                     <div class="heading">
@@ -102,7 +111,7 @@
                         <div class="options">
                             
 
-                            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="700" height="400" {*poster="MY_VIDEO_POSTER.jpg"*} data-setup="{}">
+                            <video id="my-video" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="700" height="400" {option:record.poster_filename}poster="{$record.poster_file_url}"{/option:record.poster_filename} data-setup="{}">
     						    <source src="{$record.file_url}" type='video/mp4'>
     						    <p class="vjs-no-js">
     						      To view this video please enable JavaScript, and consider upgrading to a web browser that
@@ -139,7 +148,6 @@
                     </div>
                     {/option:record.is_imported}
 
-
                     <div class="box">
                         <div class="heading">
                             <h3>
@@ -148,26 +156,33 @@
                         </div>
                         <div class="options">
                             <p>
-                                <img src="{$record.poster_preview_file_url}" id="editableposterimage">
+                                {option:record.poster_filename}
+                                    <img src="{$record.poster_preview_file_url}" id="editableposterimage">
+                                {/option:record.poster_filename}
+                                 {option:!record.poster_filename}
+                                    {$msgNoPosterProvided}
+                                {/option:!record.poster_filename}
                             </p>
                         </div>
                          <div class="options button-row">
                             <p>
-                                <a href="#" class="button js-replace-poster-file">{$lblReplace|ucfirst}</a>
+                                <a href="#" class="button js-replace-poster-file">
+                                {option:record.poster_filename}{$lblReplace|ucfirst}{/option:record.poster_filename}
+                                {option:!record.poster_filename}{$lblUpload|ucfirst}{/option:!record.poster_filename}
+                                </a>
                                 
-                                {option:feather_api_key}
-                                    {option:allow_feather_edit}
-                                    <a class="button js-launch-feather-editor" data-image="{$record.poster_file_url}" data-id="editableposterimage" href="#">{$lblEditImage|ucfirst}</a>
-                                    <a href="#" data-id="editableposterimage" class="button js-reset-file {option:!record.is_modified} hide{/option:!record.is_modified}">{$lblReset|ucfirst}</a>
-                                    {/option:allow_feather_edit}
-                                {/option:feather_api_key}
+                                {option:record.poster_filename}
+                                    {option:feather_api_key}
+                                        {option:allow_poster_feather_edit}
+                                            <a class="button js-launch-poster-feather-editor" data-image="{$record.poster_file_url}" data-id="editableposterimage" href="#">{$lblEditImage|ucfirst}</a>
+                                            <a href="#" data-id="editableposterimage" class="button js-reset-poster-file {option:!record.is_poster_modified} hide{/option:!record.is_poster_modified}">{$lblReset|ucfirst}</a>
+                                        {/option:allow_poster_feather_edit}
+                                    {/option:feather_api_key}
+                                {/option:record.poster_filename}
                             </p>
 
                          </div>
                     </div>
-
-
-
                 {/option:record.is_video}
 
 
@@ -209,7 +224,6 @@
                     </div>
                 </div>
 
-
                 {option:record.is_file}
                 <div class="box">
                     <div class="heading">
@@ -229,8 +243,6 @@
                 </div>
                 {/option:record.is_file}
 				
-				
-
             </td>
         </tr>
     </table>

@@ -8,10 +8,14 @@ use Backend\Core\Engine\Authentication as BackendAuthentication;
 use Backend\Core\Engine\Model as BackendModel;
 use Backend\Core\Engine\Form as BackendForm;
 use Backend\Core\Engine\Language as BL;
-
+use Backend\Core\Engine\DataGridDB as BackendDataGridDB;
+use Backend\Core\Engine\DataGridFunctions as BackendDataGridFunctions;
+use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 
 class Settings extends BackendBaseActionEdit
 {
+
+    private $dgResolutions;
 
     /**
      * Execute the action
@@ -44,7 +48,28 @@ class Settings extends BackendBaseActionEdit
     protected function parse()
     {
         parent::parse();
+        $this->loadDataGridResolutions();
+        $this->tpl->assign('dgResolutions', (string) $this->dgResolutions->getContent());
 
+    }
+
+     private function loadDataGridResolutions()
+    {
+        $this->dgResolutions = new BackendDataGridDB(
+            BackendMediaModel::QRY_DATAGRID_BROWSE_RESOLUTIONS,
+            array('active', BL::getWorkingLanguage())
+        );
+
+     
+        // add edit column
+        $this->dgResolutions->addColumn(
+            'edit',
+            null,
+            BL::lbl('Edit'),
+            BackendModel::createURLForAction('EditResolution') .
+            '&amp;id=[id]',
+            BL::lbl('Edit')
+        );
     }
 
     /**

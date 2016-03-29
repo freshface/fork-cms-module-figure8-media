@@ -22,7 +22,7 @@ use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
  * @author Frederik Heyninck <frederik@figure8.be>
  */
 
-class ReplacePosterImage extends BackendBaseAJAXAction
+class ReplacePosterFile extends BackendBaseAJAXAction
 {
 	/**
 	 * Execute the action
@@ -81,59 +81,47 @@ class ReplacePosterImage extends BackendBaseAJAXAction
 			$extension = strtolower($file_parts['extension']);
 			$original_filename = $file_parts['filename'];
 
-			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypesByType($this->record['type']); // Allowed file types
+			$allowed_types = BackendMediaModel::getAllAllowedFileMimetypesByType('image'); // Allowed file types
 
 			if (in_array($file_data['type'], $allowed_types) && filesize($temp_file) > 0)
 			{
 
-			  	$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-	            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
+			  	$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_FILES_FOLDER;
+	            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_PREVIEW_FILES_FOLDER;
 
 	            $fs = new Filesystem();
-	            $fs->remove($files_path . '/' . $this->record['filename']);
-	            $fs->remove($files_path . '/' . $this->record['original_filename']);
+	            $fs->mkdir($files_path, 0775);
+				$fs->mkdir($preview_files_path, 0775);
 
-	            $fs->remove($preview_files_path . '/' . $this->record['filename']);
+	            if($this->record['poster_filename']) $fs->remove($files_path . '/' . $this->record['poster_filename']);
+	            if($this->record['poster_original_filename']) $fs->remove($files_path . '/' . $this->record['poster_original_filename']);
+	            if($this->record['poster_filename']) $fs->remove($preview_files_path . '/' . $this->record['poster_filename']);
 
-	            BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
-
+	            BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['poster_filename']);
 
 				// Generate a unique filename
-				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
-
-				// path to folder
-				$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-				$preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-				
-				$fs = new Filesystem();
-				$fs->mkdir($files_path, 0775);
-				$fs->mkdir($preview_files_path, 0775);
+				$filename = BackendMediaModel::getPosterFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
 
 				// Move the file
 				move_uploaded_file($temp_file, $files_path . '/' . $filename);
 				chmod($files_path . '/' . $filename, 0775);
 
 				$update['id'] = $this->record['id'];
-				$update['filename'] = $filename;
-				$update['original_filename'] = $filename;
-				$update['edited_on'] = BackendModel::getUTCDate();
-				$update['modified'] = 'N';
-				$update['type'] = BackendMediaModel::getAllAllowedTypeByMimetype($file_data['type']);
-				$update['extension'] = $extension;
+				$update['poster_filename'] = $filename;
+				$update['poster_original_filename'] = $filename;
+				$update['poster_modified'] = 'N';
+				$update['poster_extension'] = $extension;
 
-				if($update['type'] == 'image'){
 
-					$thumbnail = new \SpoonThumbnail($files_path . '/' . $filename , 400, 400, true);
-					$thumbnail->setAllowEnlargement(true);
-					$thumbnail->setForceOriginalAspectRatio(true);
-					$thumbnail->parseToFile($preview_files_path . '/' . $filename, 100);
+				$thumbnail = new \SpoonThumbnail($files_path . '/' . $filename , 400, 400, true);
+				$thumbnail->setAllowEnlargement(true);
+				$thumbnail->setForceOriginalAspectRatio(true);
+				$thumbnail->parseToFile($preview_files_path . '/' . $filename, 100);
 
-					list($width, $height) = getimagesize($files_path . '/' . $filename);
+				list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-					$data = array('portrait' => ($width > $height) ? false: true);
-					$update['data'] = serialize($data);
-				}
-
+				$this->record['data']['poster_portrait'] = ($width > $height) ? false : true;
+				$update['data'] = serialize($this->record['data']);
 				BackendMediaModel::updateFile($update);
 			}
 			else

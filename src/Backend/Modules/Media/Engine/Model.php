@@ -16,6 +16,10 @@ use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 class Model
 {
 
+    const QRY_DATAGRID_BROWSE_RESOLUTIONS =
+        'SELECT i.width, i.height, i.id
+         FROM media_resolutions AS i';
+
     public static function getActiveLanguages()
     {
         $languages = array();
@@ -146,6 +150,7 @@ class Model
         $return['data'] = @unserialize($return['data']);
         $return['is_' . $return['type']] = true;
         $return['is_modified'] = $return['modified'] == 'Y';
+        $return['is_poster_modified'] = $return['poster_modified'] == 'Y';
         $return['file_url'] = $files_path . '/' . $return['filename'];
         $return['poster_file_url'] = $poster_files_url . '/' . $return['poster_filename'];
         $return['preview_file_url'] = $preview_files_url . '/' . $return['filename'];

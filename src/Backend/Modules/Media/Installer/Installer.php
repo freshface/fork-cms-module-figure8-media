@@ -3,6 +3,8 @@
 namespace Backend\Modules\Media\Installer;
 
 use Backend\Core\Installer\ModuleInstaller;
+use Backend\Modules\Photogallery\Engine\Api as Api;
+
 
 /**
  * Installer for the Media module
@@ -44,8 +46,11 @@ class Installer extends ModuleInstaller
         $this->setActionRights(1, 'Media', 'MoveFolder');
         $this->setActionRights(1, 'Media', 'RenameFolder');
         $this->setActionRights(1, 'Media', 'ReplaceFile');
+        $this->setActionRights(1, 'Media', 'ReplacePosterFile');
         $this->setActionRights(1, 'Media', 'ResetModifiedImage');
-        $this->setActionRights(1, 'Media', 'SaveModifiedImage');
+        $this->setActionRights(1, 'Media', 'ResetModifiedPosterImage');
+        $this->setActionRights(1, 'Media', 'SaveModifiedImage')
+        $this->setActionRights(1, 'Media', 'SaveModifiedPosterImage');;
         $this->setActionRights(1, 'Media', 'Upload');
 
         $navigationModulesId = $this->setNavigation(null, 'Modules');
@@ -68,7 +73,7 @@ class Installer extends ModuleInstaller
          // settings navigation
         $navigationSettingsId = $this->setNavigation(null, 'Settings');
         $navigationModulesId = $this->setNavigation($navigationSettingsId, 'Modules');
-        $this->setNavigation($navigationModulesId, 'Media', 'media/settings');
+        $this->setNavigation($navigationModulesId, 'Media', 'media/settings', array('media/edit_resolutions', 'media/add_resolution'));
 
         $db->insert(
                 'media_folders',
@@ -80,5 +85,31 @@ class Installer extends ModuleInstaller
                 )
             );
 
+        // Do API Call
+        self::doApiCall();
     }
+
+
+    private function doApiCall()
+    {
+        try
+        {
+            // build parameters
+            $parameters = array(
+                'site_domain' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'fork.local',
+                'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
+                'type' => 'module',
+                'name' => 'Media',
+                'version' => '1.0',
+                'email' => \SpoonSession::get('email')
+            );
+        
+            // call
+            $api = new Api();
+            $api->setApiURL('http://www.fork-cms-extensions.com/api/1.0');
+            $return = $api->doCall('products.insertProductInstallation', $parameters, false);
+        } 
+        catch(Exception $e){}
+    }
+
 }

@@ -90,10 +90,13 @@ class ReplaceFile extends BackendBaseAJAXAction
 	            $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
 	            $fs = new Filesystem();
-	            $fs->remove($files_path . '/' . $this->record['filename']);
-	            $fs->remove($files_path . '/' . $this->record['original_filename']);
+	            $fs->mkdir($files_path, 0775);
+				$fs->mkdir($preview_files_path, 0775);
 
-	            $fs->remove($preview_files_path . '/' . $this->record['filename']);
+	            if($this->record['filename']) $fs->remove($files_path . '/' . $this->record['filename']);
+	            if($this->record['original_filename']) $fs->remove($files_path . '/' . $this->record['original_filename']);
+
+	            if($this->record['filename'])$fs->remove($preview_files_path . '/' . $this->record['filename']);
 
 	            BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
 
@@ -101,13 +104,6 @@ class ReplaceFile extends BackendBaseAJAXAction
 				// Generate a unique filename
 				$filename = BackendMediaModel::getFilename(CommonUri::getUrl($file_parts['filename']) . '.' . $extension);
 
-				// path to folder
-				$files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_FILES_FOLDER;
-				$preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
-				
-				$fs = new Filesystem();
-				$fs->mkdir($files_path, 0775);
-				$fs->mkdir($preview_files_path, 0775);
 
 				// Move the file
 				move_uploaded_file($temp_file, $files_path . '/' . $filename);
@@ -130,8 +126,8 @@ class ReplaceFile extends BackendBaseAJAXAction
 
 					list($width, $height) = getimagesize($files_path . '/' . $filename);
 
-					$data = array('portrait' => ($width > $height) ? false: true);
-					$update['data'] = serialize($data);
+					$this->record['data']['portrait'] = ($width > $height) ? false: true;
+					$update['data'] = serialize($this->record['data']);
 				}
 
 				BackendMediaModel::updateFile($update);
