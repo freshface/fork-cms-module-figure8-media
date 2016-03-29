@@ -37,7 +37,6 @@ class CreateFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            
             $data = array(
                 'parent_id' => $parent_id,
                 'name' => $name,

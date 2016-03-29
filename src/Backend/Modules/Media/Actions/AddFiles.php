@@ -59,15 +59,15 @@ class AddFiles extends BackendBaseActionEdit
         $this->frm = new BackendForm('edit');
 
         $folders = BackendMediaTreeModel::getFolderTreeForDropdown();
-        $this->frm->addDropdown('folder', $folders, $this->folder_id)->setDefaultElement('Select a folder', ''); 
+        $this->frm->addDropdown('folder', $folders, $this->folder_id)->setDefaultElement('Select a folder', '');
     }
 
     private function validateForm()
     {
         // is the form submitted?
         if ($this->frm->isSubmitted()) {
-             if ($this->frm->isCorrect()) {
-             }
+            if ($this->frm->isCorrect()) {
+            }
         }
     }
 
@@ -75,23 +75,23 @@ class AddFiles extends BackendBaseActionEdit
      * Parse the page
      */
     protected function parse()
-    {   
+    {
         parent::parse();
 
         $this->tpl->assign("library", $this->library);
         $this->tpl->assign("folder", $this->folder);
         $this->tpl->assign("tree", $this->tree);
-        $this->header->addJSData('media','folder_id', $this->folder_id);
+        $this->header->addJSData('media', 'folder_id', $this->folder_id);
 
         $timestamp = time();
 
-        $this->header->addJSData('media','upload_timestamp', $timestamp);
-        $this->header->addJSData('media','upload_token', md5($timestamp));
-        $this->header->addJSData('media','allowed_file_types', $this->allowed_file_types);
+        $this->header->addJSData('media', 'upload_timestamp', $timestamp);
+        $this->header->addJSData('media', 'upload_token', md5($timestamp));
+        $this->header->addJSData('media', 'allowed_file_types', $this->allowed_file_types);
 
-        $this->header->addJSData('media','upload_uploaded_success_url', Model::createURLForAction('Index') . '&folder_id=' . $this->folder_id);
-        $this->header->addJSData('media','upload_uploaded_fallback_url', ''); // not supported page
+        $this->header->addJSData('media', 'upload_uploaded_success_url', Model::createURLForAction('Index') . '&folder_id=' . $this->folder_id);
+        $this->header->addJSData('media', 'upload_uploaded_fallback_url', ''); // not supported page
 
-        $this->header->addJSData('media','add_files_url', Model::createURLForAction('AddFiles'));
+        $this->header->addJSData('media', 'add_files_url', Model::createURLForAction('AddFiles'));
     }
 }

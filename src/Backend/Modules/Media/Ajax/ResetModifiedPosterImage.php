@@ -7,7 +7,6 @@ use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
-
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
@@ -36,7 +35,6 @@ class ResetModifiedPosterImage extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-
             $this->record = BackendMediaModel::getFile($id);
             $files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_POSTER_FILES_FOLDER;
 
@@ -48,8 +46,12 @@ class ResetModifiedPosterImage extends BackendBaseAJAXAction
 
             // remove  files
             $fs = new Filesystem();
-            if($this->record['poster_filename']) $fs->remove($files_path . '/' . $this->record['poster_filename']);
-            if($this->record['poster_filename']) $fs->remove($preview_files_path . '/' . $this->record['poster_filename']);
+            if ($this->record['poster_filename']) {
+                $fs->remove($files_path . '/' . $this->record['poster_filename']);
+            }
+            if ($this->record['poster_filename']) {
+                $fs->remove($preview_files_path . '/' . $this->record['poster_filename']);
+            }
 
             // remove generated files
             BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['poster_filename']);

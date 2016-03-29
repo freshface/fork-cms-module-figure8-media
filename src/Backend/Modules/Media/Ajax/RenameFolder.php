@@ -37,8 +37,7 @@ class RenameFolder extends BackendBaseAJAXAction
         if (!empty($errors)) {
             $this->output(self::BAD_REQUEST, array('errors' => $errors), 'not all fields were filled');
         } else {
-            
-             $data = array(
+            $data = array(
                 'id' => $id,
                 'name' => $name
             );

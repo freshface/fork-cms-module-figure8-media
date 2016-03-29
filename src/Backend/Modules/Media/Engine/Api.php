@@ -14,281 +14,292 @@ use Backend\Modules\Media\Engine\Model as BackendMediaModel;
  */
 class Api
 {
-	// internal constant to enable/disable debugging
-	const DEBUG = false;
+    // internal constant to enable/disable debugging
+    const DEBUG = false;
 
-	// current version
-	const VERSION = '1.0.0';
+    // current version
+    const VERSION = '1.0.0';
 
-	/**
-	 * The public key to use
-	 *
-	 * @var	string
-	 */
-	private $publicKey;
+    /**
+     * The public key to use
+     *
+     * @var	string
+     */
+    private $publicKey;
 
-	/**
-	 * The private key
-	 *
-	 * @var string
-	 */
-	private $privateKey;
+    /**
+     * The private key
+     *
+     * @var string
+     */
+    private $privateKey;
 
-	/**
-	 * The timeout
-	 *
-	 * @var int
-	 */
-	private $timeOut = 20;
+    /**
+     * The timeout
+     *
+     * @var int
+     */
+    private $timeOut = 20;
 
-	/**
-	 * The user agent
-	 *
-	 * @var string
-	 */
-	private $userAgent;
-	
-	/**
-	 * The user agent
-	 *
-	 * @var string
-	 */
-	private $apiURL = '';
-
-
-	/**
-	 * The user agent
-	 *
-	 * @var string
-	 */
-	private $apiPort = 80;
-
-	/**
-	 * Default constructor
-	 *
-	 * @return void
-	 * @param string[optional] $publicKey The public-key of the keypair.
-	 * @param string[optional] $privateKey The private-key of the keypair.
-	 */
-	public function __construct($publicKey = null, $privateKey = null)
-	{
-		if($publicKey !== null) $this->setPublicKey($publicKey);
-		if($publicKey !== null) $this->setPrivateKey($privateKey);
-	}
+    /**
+     * The user agent
+     *
+     * @var string
+     */
+    private $userAgent;
+    
+    /**
+     * The user agent
+     *
+     * @var string
+     */
+    private $apiURL = '';
 
 
-	/**
-	 * Make the call
-	 *
-	 * @return string
-	 * @param string $method The method to call.
-	 * @param array[optional] $parameters The parameters to pass.
-	 * @param bool[optional] $authenticate Should we authenticate?
-	 * @param bool[optional] $usePOST Should we use POST?
-	 */
-	public function doCall($method, $parameters = array(), $authenticate = true, $usePOST = false)
-	{
-		if($this->apiURL == '') throw new Exception('Please provide an API URL.');
-		
-		// redefine
-		$method = (string) $method;
-		$parameters = (array) $parameters;
-		$authenticate = (bool) $authenticate;
+    /**
+     * The user agent
+     *
+     * @var string
+     */
+    private $apiPort = 80;
 
-		// add required parameters
-		$queryStringParameters['method'] = (string) $method;
+    /**
+     * Default constructor
+     *
+     * @return void
+     * @param string[optional] $publicKey The public-key of the keypair.
+     * @param string[optional] $privateKey The private-key of the keypair.
+     */
+    public function __construct($publicKey = null, $privateKey = null)
+    {
+        if ($publicKey !== null) {
+            $this->setPublicKey($publicKey);
+        }
+        if ($publicKey !== null) {
+            $this->setPrivateKey($privateKey);
+        }
+    }
 
-		// authentication stuff
-		if($authenticate)
-		{
-			// get keys
-			$publicKey = $this->getPublicKey();
-			$privateKey = $this->getPrivateKey();
 
-			// validate
-			if($publicKey == '' || $privateKey == '') throw new Exception('This method ('. $method .') requires authentication, provide a public and private key.');
+    /**
+     * Make the call
+     *
+     * @return string
+     * @param string $method The method to call.
+     * @param array[optional] $parameters The parameters to pass.
+     * @param bool[optional] $authenticate Should we authenticate?
+     * @param bool[optional] $usePOST Should we use POST?
+     */
+    public function doCall($method, $parameters = array(), $authenticate = true, $usePOST = false)
+    {
+        if ($this->apiURL == '') {
+            throw new Exception('Please provide an API URL.');
+        }
+        
+        // redefine
+        $method = (string) $method;
+        $parameters = (array) $parameters;
+        $authenticate = (bool) $authenticate;
 
-			// add prams
-			$queryStringParameters['public_key'] = $publicKey;
-			$queryStringParameters['nonce'] = time();
-			$queryStringParameters['secret'] = md5($publicKey . $privateKey . $queryStringParameters['nonce']);
-		}
+        // add required parameters
+        $queryStringParameters['method'] = (string) $method;
 
-		// build URL
-		$url = $this->apiURL .'/?'. http_build_query($queryStringParameters);
+        // authentication stuff
+        if ($authenticate) {
+            // get keys
+            $publicKey = $this->getPublicKey();
+            $privateKey = $this->getPrivateKey();
 
-		// use POST?
-		if($usePOST)
-		{
-			// set POST
-			$options[CURLOPT_POST] = true;
+            // validate
+            if ($publicKey == '' || $privateKey == '') {
+                throw new Exception('This method ('. $method .') requires authentication, provide a public and private key.');
+            }
 
-			// add data if needed
-			if(!empty($parameters)) $options[CURLOPT_POSTFIELDS] = array('data' => json_encode($parameters));
-		}
+            // add prams
+            $queryStringParameters['public_key'] = $publicKey;
+            $queryStringParameters['nonce'] = time();
+            $queryStringParameters['secret'] = md5($publicKey . $privateKey . $queryStringParameters['nonce']);
+        }
 
-		else
-		{
-			// any data if needed
-			if(!empty($parameters))
-			{
-				// build querystring
-				$queryString = http_build_query(array('data' => json_encode($parameters)));
+        // build URL
+        $url = $this->apiURL .'/?'. http_build_query($queryStringParameters);
 
-				// prepend
-				$url .= '&'. $queryString;
-			}
-		}
+        // use POST?
+        if ($usePOST) {
+            // set POST
+            $options[CURLOPT_POST] = true;
 
-		// set options
-		$options[CURLOPT_URL] = $url;
-		$options[CURLOPT_PORT] = $this->apiPort;
-		$options[CURLOPT_USERAGENT] = $this->getUserAgent();
-		if(ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off')) $options[CURLOPT_FOLLOWLOCATION] = true;
-		$options[CURLOPT_RETURNTRANSFER] = true;
-		$options[CURLOPT_TIMEOUT] = (int) $this->getTimeOut();
+            // add data if needed
+            if (!empty($parameters)) {
+                $options[CURLOPT_POSTFIELDS] = array('data' => json_encode($parameters));
+            }
+        } else {
+            // any data if needed
+            if (!empty($parameters)) {
+                // build querystring
+                $queryString = http_build_query(array('data' => json_encode($parameters)));
 
-		// init
-		$curl = curl_init();
-		
-		// set options
-		curl_setopt_array($curl, $options);
+                // prepend
+                $url .= '&'. $queryString;
+            }
+        }
 
-		// execute
-		$response = curl_exec($curl);
-		$headers = curl_getinfo($curl);
+        // set options
+        $options[CURLOPT_URL] = $url;
+        $options[CURLOPT_PORT] = $this->apiPort;
+        $options[CURLOPT_USERAGENT] = $this->getUserAgent();
+        if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off')) {
+            $options[CURLOPT_FOLLOWLOCATION] = true;
+        }
+        $options[CURLOPT_RETURNTRANSFER] = true;
+        $options[CURLOPT_TIMEOUT] = (int) $this->getTimeOut();
 
-		// fetch errors
-		$errorNumber = curl_errno($curl);
-		$errorMessage = curl_error($curl);
+        // init
+        $curl = curl_init();
+        
+        // set options
+        curl_setopt_array($curl, $options);
 
-		// close
-		curl_close($curl);
+        // execute
+        $response = curl_exec($curl);
+        $headers = curl_getinfo($curl);
 
-		// we expect XML so decode it
-		$xml = @simplexml_load_string($response, null, LIBXML_NOCDATA);
+        // fetch errors
+        $errorNumber = curl_errno($curl);
+        $errorMessage = curl_error($curl);
 
-		// validate XML
-		if($xml === false) throw new Exception('Invalid XML-response.');
+        // close
+        curl_close($curl);
 
-		// is error?
-		if(!isset($xml['status']) || (string) $xml['status'] != 'ok')
-		{
-			// is it a response error
-			if(isset($xml->error)) throw new Exception((string) $xml->error);
+        // we expect XML so decode it
+        $xml = @simplexml_load_string($response, null, LIBXML_NOCDATA);
 
-			// invalid json?
-			else throw new Exception('Invalid XML-response.');
-		}
+        // validate XML
+        if ($xml === false) {
+            throw new Exception('Invalid XML-response.');
+        }
 
-		// return
-		return $xml;
-	}
+        // is error?
+        if (!isset($xml['status']) || (string) $xml['status'] != 'ok') {
+            // is it a response error
+            if (isset($xml->error)) {
+                throw new Exception((string) $xml->error);
+            }
 
-	/**
-	 * Get the private key
-	 *
-	 * @return string
-	 */
-	private function getPrivateKey()
-	{
-		return (string) $this->privateKey;
-	}
+            // invalid json?
+            else {
+                throw new Exception('Invalid XML-response.');
+            }
+        }
 
-	/**
-	 * Get the public key
-	 *
-	 * @return string
-	 */
-	private function getPublicKey()
-	{
-		return (string) $this->publicKey;
-	}
+        // return
+        return $xml;
+    }
 
-	/**
-	 * Get the timeout that will be used
-	 *
-	 * @return int
-	 */
-	public function getTimeOut()
-	{
-		return (int) $this->timeOut;
-	}
+    /**
+     * Get the private key
+     *
+     * @return string
+     */
+    private function getPrivateKey()
+    {
+        return (string) $this->privateKey;
+    }
 
-	/**
-	 * Get the useragent that will be used. Our version will be prepended to yours.
-	 * It will look like: "PHP ForkAPI/<version> <your-user-agent>"
-	 *
-	 * @return string
-	 */
-	public function getUserAgent()
-	{
-		return (string) 'PHP ApiCall/'. self::VERSION .' '. $this->userAgent;
-	}
+    /**
+     * Get the public key
+     *
+     * @return string
+     */
+    private function getPublicKey()
+    {
+        return (string) $this->publicKey;
+    }
 
-	/**
-	 * Get the private key
-	 *
-	 * @return string
-	 */
-	public function setApiURL($url)
-	{
-		$this->apiURL = rtrim((string) $url, '/');
-	}
-	
-	/**
-	 * Get the private key
-	 *
-	 * @return string
-	 */
-	public function setApiPort($port)
-	{
-		$this->apiPort = (int) $port;
-	}
+    /**
+     * Get the timeout that will be used
+     *
+     * @return int
+     */
+    public function getTimeOut()
+    {
+        return (int) $this->timeOut;
+    }
 
-	/**
-	 * Set the private key
-	 *
-	 * @return void
-	 * @param string $key The private key.
-	 */
-	public function setPrivateKey($key)
-	{
-		$this->privateKey = (string) $key;
-	}
+    /**
+     * Get the useragent that will be used. Our version will be prepended to yours.
+     * It will look like: "PHP ForkAPI/<version> <your-user-agent>"
+     *
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        return (string) 'PHP ApiCall/'. self::VERSION .' '. $this->userAgent;
+    }
 
-	/**
-	 * Set the public key
-	 *
-	 * @return void
-	 * @param string $key The public key.
-	 */
-	public function setPublicKey($key)
-	{
-		$this->publicKey = (string) $key;
-	}
+    /**
+     * Get the private key
+     *
+     * @return string
+     */
+    public function setApiURL($url)
+    {
+        $this->apiURL = rtrim((string) $url, '/');
+    }
+    
+    /**
+     * Get the private key
+     *
+     * @return string
+     */
+    public function setApiPort($port)
+    {
+        $this->apiPort = (int) $port;
+    }
 
-	/**
-	 * Set the timeout
-	 * After this time the request will stop. You should handle any errors triggered by this.
-	 *
-	 * @return void
-	 * @param int $seconds The timeout in seconds.
-	 */
-	public function setTimeOut($seconds)
-	{
-		$this->timeOut = (int) $seconds;
-	}
+    /**
+     * Set the private key
+     *
+     * @return void
+     * @param string $key The private key.
+     */
+    public function setPrivateKey($key)
+    {
+        $this->privateKey = (string) $key;
+    }
 
-	/**
-	 * Set the user-agent for you application
-	 * It will be appended to ours, the result will look like: "PHP ApiCall/<version> <your-user-agent>"
-	 *
-	 * @return void
-	 * @param string $userAgent Your user-agent, it should look like <app-name>/<app-version>.
-	 */
-	public function setUserAgent($userAgent)
-	{
-		$this->userAgent = (string) $userAgent;
-	}
+    /**
+     * Set the public key
+     *
+     * @return void
+     * @param string $key The public key.
+     */
+    public function setPublicKey($key)
+    {
+        $this->publicKey = (string) $key;
+    }
+
+    /**
+     * Set the timeout
+     * After this time the request will stop. You should handle any errors triggered by this.
+     *
+     * @return void
+     * @param int $seconds The timeout in seconds.
+     */
+    public function setTimeOut($seconds)
+    {
+        $this->timeOut = (int) $seconds;
+    }
+
+    /**
+     * Set the user-agent for you application
+     * It will be appended to ours, the result will look like: "PHP ApiCall/<version> <your-user-agent>"
+     *
+     * @return void
+     * @param string $userAgent Your user-agent, it should look like <app-name>/<app-version>.
+     */
+    public function setUserAgent($userAgent)
+    {
+        $this->userAgent = (string) $userAgent;
+    }
 }

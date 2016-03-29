@@ -7,7 +7,6 @@ use Backend\Core\Engine\Language as BL;
 use Backend\Modules\Media\Engine\Model as BackendMediaModel;
 use Frontend\Modules\Media\Engine\Helper as FrontendMediaHelper;
 use Backend\Modules\Media\Engine\Helper as BackendMediaHelper;
-
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
@@ -56,15 +55,15 @@ class SaveModifiedImage extends BackendBaseAJAXAction
             // download
             $downloaded = \SpoonFile::download($url, $files_path . '/' . $new_filename);
 
-            if($downloaded)
-            {
-                
+            if ($downloaded) {
                 $preview_files_path = FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
                 $preview_files_url = FRONTEND_FILES_URL . '/' . FrontendMediaHelper::SETTING_PREVIEW_FILES_FOLDER;
 
                 // remove preview file
                 $fs = new Filesystem();
-                if($this->record['filename']) $fs->remove($preview_files_path . '/' . $this->record['filename']);
+                if ($this->record['filename']) {
+                    $fs->remove($preview_files_path . '/' . $this->record['filename']);
+                }
 
                 // remove generated files
                 BackendMediaHelper::removeGeneratedFiles(FRONTEND_FILES_PATH . '/' . FrontendMediaHelper::SETTING_GENERATED_FILES_FOLDER, $this->record['filename']);
